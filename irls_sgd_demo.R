@@ -20,7 +20,7 @@ irlssgd_res_l <- irls.sgd(million_x, million_y_l, binomial(),
             sgd.control=list(subs=0.0005, maxit=500, alpha=0.05, decay=0.99, histfreq=10), T)
 
 # Create a plot showing the convergence of S-IRLS-SGD
-par(mfrow=c(4,4),oma = c(0, 0, 2, 0))
+par(mfrow=c(4,4),oma = c(0,0,2,0))
 for (i in 1:16) {
   multiplot(cbind(c(irlssgd_res_l$irls_hist[,i], irlssgd_res_l$sgd_hist[,i]), true_glm_res$coefficients[i]),
             frame.plot=F,
