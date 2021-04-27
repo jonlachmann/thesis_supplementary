@@ -40,3 +40,47 @@ for (i in 1:full_model_count) {
 }
 
 loglik <- logistic.loglik.aic.irlssgd(million_y_l[1:10000], million_x[1:10000,], rep(T,16), NULL, list(subs = 0.03))
+
+sgd_log <- function (data=NULL, ctrl=list(start, alpha, decay, subs, maxit, histfreq)) {
+  # Initialize coefficients from start or randomly
+  if (is.null(ctrl$start)) x <- rnorm(ncol(data)-1)
+  else x <- ctrl$start
+  nvars <- length(x)
+
+  # Set up default values if not set
+  if (is.null(ctrl$alpha)) ctrl$alpha <- 0.0005
+  if (is.null(ctrl$decay)) ctrl$decay <- 0.999
+  if (is.null(ctrl$subs)) ctrl$subs <- 1
+  if (is.null(ctrl$maxit)) ctrl$maxit <- 1000
+  if (is.null(ctrl$histfreq)) ctrl$histfreq <- 50
+
+  # Get observation count and set subsample size
+  if (!is.null(data)) {
+    nobs <- nrow(data)
+    sub_size <- nobs*ctrl$subs
+  }
+
+  # Set decay
+  if (is.null(ctrl$decay)) ctrl$decay <- (maxit-2)/maxit
+
+  # Set up matrix for history
+  xhist <- matrix(NA, ctrl$maxit/ctrl$histfreq+1, nvars)
+  xhist[1,] <- x
+
+  # Run (S)GD
+  for (i in 1:ctrl$maxit) {
+    if (ctrl$subs != 1) sub_idx <- sample(1:nobs, sub_size, replace=T)
+    else sub_idx <- 1:nobs
+    ctrl$alpha <- ctrl$alpha * ctrl$decay
+
+    eta <- family$linkinv(data[sub_idx,-1]%*%x)
+    grad <- (t(data[sub_idx,-1])%*%(eta-data[sub_idx,1])/sub_size)
+
+    if (!is.null(data)) x <- x - ctrl$alpha * grad
+    else x <- x - ctrl$alpha * gradient(x)
+    if (i %% ctrl$histfreq == 0) xhist[i/ctrl$histfreq+1,] <- x
+  }
+  return(list(x=x, xhist=xhist))
+}
+
+sgd_log(cbind(million_y_l, million_x), ctrl=list(subs=0.01, maxit=500, alpha=0.05, decay=0.99, histfreq=10))

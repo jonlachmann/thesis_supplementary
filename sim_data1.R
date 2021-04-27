@@ -10,14 +10,22 @@ full_model_count <- 2^nvars
 
 # Generate the data to use
 {
-  set.seed(1911)
-  covmat <- matrix(rnorm(nvars^2, runif(nvars^2, -5,5), runif(nvars^2, 0, 5)), nvars)
-  covmat <- covmat %*% t(covmat)
+  #set.seed(1911)
+  #covmat <- matrix(rnorm(nvars^2, runif(nvars^2, -5,5), runif(nvars^2, 0, 5)), nvars)
+  #covmat <- covmat %*% t(covmat)
 
-  million_x <- cbind(1, matrix(rmvnorm(nobs, runif(nvars, -5,5), covmat), nobs))
-  covars <- sample.int(nvars, 4)
-  betas <- runif(length(covars)+1, -10, 10)
-  million_y_g <- (million_x[,c(1,covars)] * rnorm(nobs*(length(covars)+1), 1, 0.5)) %*% betas
-  million_y_eta <- (1/(1+exp(-million_y_g)))
-  million_y_l <- rbinom(nobs, 1, million_y_eta)
+  #million_x <- cbind(1, matrix(rmvnorm(nobs, runif(nvars, -5,5), covmat), nobs))
+  #covars <- sample.int(nvars, 4)
+  #betas <- runif(length(covars)+1, -10, 10)
+  #million_y_g <- (million_x[,c(1,covars)] * rnorm(nobs*(length(covars)+1), 1, 0.5)) %*% betas
+  #million_y_eta <- (1/(1+exp(-million_y_g)))
+  #million_y_l <- rbinom(nobs, 1, million_y_eta)
 }
+#save(covmat, file="data/sim_data1/covmat.Rdata")
+#save(covars, file="data/sim_data1/covars.Rdata")
+#save(betas, file="data/sim_data1/betas.Rdata")
+#save(million_x, file="data/sim_data1/million_x.Rdata")
+#save(million_y_g, file="data/sim_data1/million_y_g.Rdata")
+#save(million_y_l, file="data/sim_data1/million_y_l.Rdata")
+sim_data1_files <- list.files(path="data/sim_data1/")
+for (file in sim_data1_files) load(file=paste0("data/sim_data1/",file))
