@@ -24,8 +24,13 @@ full_model_count <- 2^nvars
 #save(covmat, file="data/sim_data1/covmat.Rdata")
 #save(covars, file="data/sim_data1/covars.Rdata")
 #save(betas, file="data/sim_data1/betas.Rdata")
-#save(million_x, file="data/sim_data1/million_x.Rdata")
+#million_x_1 <- million_x[1:500000,]
+#million_x_2 <- million_x[500001:1000000,]
+#save(million_x_1, file="data/sim_data1/million_x_1.Rdata")
+#save(million_x_2, file="data/sim_data1/million_x_2.Rdata")
 #save(million_y_g, file="data/sim_data1/million_y_g.Rdata")
 #save(million_y_l, file="data/sim_data1/million_y_l.Rdata")
 sim_data1_files <- list.files(path="data/sim_data1/")
 for (file in sim_data1_files) load(file=paste0("data/sim_data1/",file))
+million_x <- rbind(million_x_1, million_x_2)
+remove(million_x_1, million_x_2, sim_data1_files)
