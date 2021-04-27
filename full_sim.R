@@ -115,7 +115,7 @@ full_10K_renorm[,5] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_05)
 full_10K_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_01)
 
 barplot(t(full_10K_renorm), beside=T)
-cor(full_10K_renorm)
+plot(cor(full_10K_renorm)[1,], type="l")
 
 
 # Calculate the full model set for the gaussian case using regular glm (SLOW!)
