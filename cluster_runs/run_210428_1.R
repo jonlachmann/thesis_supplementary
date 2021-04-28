@@ -3,6 +3,9 @@
 # Created by: jonlachmann
 # Created on: 2021-04-28
 
+# Load command line arguments
+args <- commandArgs(trailingOnly=TRUE)
+
 # Load packages
 source("../packages.R")
 # Simulate data

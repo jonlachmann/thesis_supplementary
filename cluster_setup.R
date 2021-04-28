@@ -7,6 +7,7 @@
 .libPaths("/cluster/home/jola4668/R")
 
 # Load devtools
+install.packages("usethis")
 install.packages("devtools")
 library(devtools)
 
