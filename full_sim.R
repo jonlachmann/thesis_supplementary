@@ -18,7 +18,7 @@ source("functions.R")
 #full_10K <- run_sim(logistic.loglik.aic, 10000, 1:full_model_count, 1)
 #save(full_10K, file="data/full_10K.Rdata")
 load(file="data/full_10K.Rdata")
-load(file="data/full_100K_res.Rdata")
+load(file="data/mjmcmc_10K_res.Rdata")
 
 # Calculate the full model set using 0.1, 0.25, 0.5, 1, 5, and 10% at each iteration
 #full_10K_sub_01 <- run_sim(logistic.loglik.aic.irlssgd, 10000, 1:full_model_count, 0.001)
