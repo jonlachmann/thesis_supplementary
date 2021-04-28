@@ -20,15 +20,22 @@ source("functions.R")
 
 num_cores <- detectCores()
 
-data_10K <- cbind(million_y_l, million_x)[1:10000,]
+data_100K <- cbind(million_y_l, million_x)[1:100000,]
+data_1M <- cbind(million_y_l, million_x)[1:1000000,]
 
 sim_probs <- gen.probs.list()
 sim_pars <- gen.params.list(data_10K)
 
 options(warn=1)
 
-mjmcmc_10K_res <- mclapply(1:7, function (x) {
-  mjmcmc(data_10K, logistic.loglik.aic, 6554, sim_probs, sim_pars)
+mjmcmc_100K <- mclapply(1:20, function (x) {
+  mjmcmc(data_100K, logistic.loglik.aic, 6554, sim_probs, sim_pars)
 }, mc.cores = num_cores)
 
-save(mjmcmc_10K_res, file="mjmcmc_10K_res.Rdata")
+save(mjmcmc_100K, file="mjmcmc_100K.Rdata")
+
+mjmcmc_1M <- mclapply(1:20, function (x) {
+  mjmcmc(data_1M, logistic.loglik.aic, 6554, sim_probs, sim_pars)
+}, mc.cores = num_cores)
+
+save(mjmcmc_1M, file="mjmcmc_1M.Rdata")
