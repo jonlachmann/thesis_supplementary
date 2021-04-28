@@ -13,10 +13,7 @@ library(devtools)
 
 # Load RCurl
 #install.packages("RCurl", repos='http://cran.us.r-project.org')
-library(RCurl)
 
 # Install our packages
 install_github("jonlachmann/GMJMCMC", build_vignettes=F)
 install_github("jonlachmann/irls.sgd", build_vignettes=F)
-
-library(parallel)
