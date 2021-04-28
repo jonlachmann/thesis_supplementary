@@ -9,9 +9,10 @@ multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), ...) {
     mat[mat > 0] <- log(mat[mat > 0])
     mat[mat < 0] <- -log(-mat[mat < 0])
   }
+  mat <- as.matrix(mat)
   rbcol <- rainbow(ncol(mat))
   plot(mat[,1], type="l", ylim=ylim, col=rbcol[1], ...)
-  for (i in 2:ncol(mat)) lines(mat[,i], col=rbcol[i])
+  if (ncol(mat) > 1) for (i in 2:ncol(mat)) lines(mat[,i], col=rbcol[i])
 }
 
 # Print a progress bar while iterating over a population
@@ -23,4 +24,23 @@ print.progressbar <- function (progress, size=40) {
   }
   cat("|")
   return(progress+1)
+}
+
+# Calculate rmse for the first iters iterations when also having the full renormalized probabilities
+rmse <- function (full, sim, iters) {
+  sim_renorm <- GMJMCMC:::marginal.probs.renorm(sim$models[1:iters])
+  names(sim_renorm) <- paste0("y",1:length(sim_renorm))
+  sim_renorm <- sim_renorm[order(full)]
+  full <- sort(full)
+  rmse <- sqrt((sim_renorm - full)^2)
+  return(rmse*100)
+}
+
+rmse_conv <- function (full, sim, steps) {
+  rmse_converge <- matrix(NA, steps, length(full))
+  step_size <- length(sim$models) / steps
+  for(i in 1:steps) {
+    rmse_converge[i,] <- rmse(full, sim, i*step_size)
+  }
+  return(rmse_converge)
 }
