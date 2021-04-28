@@ -44,3 +44,16 @@ rmse_conv <- function (full, sim, steps) {
   }
   return(rmse_converge)
 }
+
+# Function for running simulations on many models with varying subsample size
+run_sim <- function (loglik_fun, nobs, models, subs) {
+  res <- vector("list", length(models))
+  progress <- 0
+  for (i in models) {
+    modelvector <- as.logical(c(T,intToBits(i)[1:15]))
+    loglik <- loglik_fun(million_y_l[1:nobs], million_x[1:nobs,], modelvector, NULL, list(subs = subs))
+    res[[i]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
+    if (i %% floor(length(models)/100) < 0.5) progress <- print.progressbar(progress, 100)
+  }
+  return(res)
+}

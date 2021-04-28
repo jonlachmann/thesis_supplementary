@@ -14,19 +14,6 @@ source("functions.R")
 
 ### Logistic regression simulation
 
-# Function for running simulations on many models with varying subsample size
-run_sim <- function (loglik_fun, nobs, models, subs) {
-  res <- vector("list", length(models))
-  progress <- 0
-  for (i in models) {
-    modelvector <- as.logical(c(T,intToBits(i)[1:15]))
-    loglik <- loglik_fun(million_y_l[1:nobs], million_x[1:nobs,], modelvector, NULL, list(subs = subs))
-    res[[i]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
-    if (i %% floor(full_model_count/100) == 0) progress <- print.progressbar(progress, 100)
-  }
-  return(res)
-}
-
 # Calculate the full model set for the logistic case using regular glm (SLOW!)
 #full_10K <- run_sim(logistic.loglik.aic, 10000, 1:full_model_count, 1)
 #save(full_10K, file="data/full_10K.Rdata")
