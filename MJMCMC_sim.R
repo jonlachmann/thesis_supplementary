@@ -25,11 +25,25 @@ sim_pars <- gen.params.list(data_10K)
 
 #mjmcmc_10K <- mjmcmc(cbind(million_y_l, million_x)[1:10000,], logistic.loglik.aic, 5000, sim_probs, sim_pars)
 #save(mjmcmc_10K, file="data/mjmcmc_sim/mjmcmc_10K")
-load(file="data/mjmcmc_sim/mjmcmc_10K")
+load(file="data/mjmcmc_sim/mjmcmc_10K.Rdata")
 
-mjmcmc_10K_conv <- rmse_conv(full_10K_renorm, mjmcmc_10K, 50)
-multiplot(rowMeans(mjmcmc_10K_conv))
+mjmcmc_10K_conv <- vector("list", 20)
+for (i in 1:20) {
+  if (!is.null(mjmcmc_10K[[i]])) {
+    mjmcmc_10K_conv[[i]] <- rmse_conv(full_10K_renorm, mjmcmc_10K[[i]], 66)
+  }
+}
 
-library(RCurl)
+quantmeans <- matrix_quantmean(mjmcmc_10K_conv)
+par(mfrow=c(3,5))
+for (i in 1:15) {
+  plot(-10, xlim=c(0,66), ylim=c(0,max(quantmeans$high[,i])), ylab="RMSE", xlab="Iterations")
+  polygon(c(1:66, 66:1), c(quantmeans$low[,i], rev(quantmeans$high[,i])),
+        col="lightgrey", border=NA)
+  lines(quantmeans$mean[,i])
+}
 
-ftpUpload("data/full_10K.Rdata", "ftp://jon:mar71him@jonlachmann.se/full_10K.Rdata")
+
+plot(quantmeans$high[,2])
+
+multiplot(rowMeans(quantmeans$mean))

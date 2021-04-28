@@ -59,3 +59,20 @@ run_sim <- function (loglik_fun, nobs, models, subs) {
   }
   return(res)
 }
+
+# Function for calculating the quantiles and mean of many matrices
+matrix_quantmean <- function (matlist, quantiles=c(0.05, 0.95)) {
+  mat_all <- matrix(NA, nrow(matlist[[1]])*ncol(matlist[[1]]), length(matlist))
+  count <- 0
+  for (i in 1:length(matlist)) {
+    if (!is.null(matlist[[i]])) {
+      count <- count + 1
+      mat_all[,count] <- as.vector(matlist[[i]])
+    }
+  }
+  mat_all <- mat_all[,1:count]
+  mat_mean <- matrix(rowMeans(mat_all), nrow(matlist[[1]]), ncol(matlist[[1]]))
+  mat_low <- matrix(apply(mat_all, 1, quantile, probs = quantiles[1]), nrow(matlist[[1]]), ncol(matlist[[1]]))
+  mat_high <- matrix(apply(mat_all, 1, quantile, probs = quantiles[2]), nrow(matlist[[1]]), ncol(matlist[[1]]))
+  return(list(mean=mat_mean, low=mat_low, high=mat_high))
+}

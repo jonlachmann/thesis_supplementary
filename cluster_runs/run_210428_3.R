@@ -17,7 +17,7 @@ source("functions.R")
 
 num_cores <- detectCores()
 
-model_partitions <- matrix(1:full_model_count, 128, 512)
+model_partitions <- matrix(1:full_model_count, 128, 256, byrow=T)
 
 full_1M_res <- mclapply(1:128, function (x) {
   run_sim(logistic.loglik.aic, 1000000, model_partitions[x,], 1)

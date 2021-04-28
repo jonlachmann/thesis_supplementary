@@ -18,7 +18,7 @@ source("functions.R")
 #full_10K <- run_sim(logistic.loglik.aic, 10000, 1:full_model_count, 1)
 #save(full_10K, file="data/full_10K.Rdata")
 load(file="data/full_10K.Rdata")
-load(file="data/mjmcmc_10K_res.Rdata")
+load(file="data/full_100K.Rdata")
 
 # Calculate the full model set using 0.1, 0.25, 0.5, 1, 5, and 10% at each iteration
 #full_10K_sub_01 <- run_sim(logistic.loglik.aic.irlssgd, 10000, 1:full_model_count, 0.001)
@@ -77,8 +77,7 @@ full_10K_renorm[,7] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_01)
 barplot(t(full_10K_renorm), beside=T)
 plot(cor(full_10K_renorm)[1,], type="l")
 
-
-
+GMJMCMC:::marginal.probs.renorm(full_100K)
 
 # Calculate the full model set for the gaussian case using regular glm (SLOW!)
 full_10K_g <- vector("list", full_model_count)
