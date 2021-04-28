@@ -21,6 +21,4 @@ module load R/4.0.3-foss-2020b
 module list
 
 ## Do some work:
-if cd thesis_supplementary; then git pull; else git clone https://github.com/jonlachmann/thesis_supplementary.git thesis_supplementary; cd thesis_supplementary; fi
-Rscript cluster_setup.R
 Rscript cluster_runs/run_210428_1.R $1
