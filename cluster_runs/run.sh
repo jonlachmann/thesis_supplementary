@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Job name:
-#SBATCH --job-name=MJMCMC RUN
+#SBATCH --job-name=MJMCMC_RUN
 #
 # Project:
 #SBATCH --account=NN9862K
 #
 # Wall time limit:
 #SBATCH --time=01-12:00:00
+#SBATCH --mem-per-cpu=3G
+#SBATCH --ntasks=20
 #
 
 ## Set up job environment:
