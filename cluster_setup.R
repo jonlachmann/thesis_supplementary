@@ -7,9 +7,11 @@
 .libPaths("/cluster/home/jola4668/R")
 
 # Load devtools
+install.packages("devtools")
 library(devtools)
 
 # Load RCurl
+install.packages("RCurl")
 library(RCurl)
 
 # Install our packages

@@ -1,16 +1,14 @@
 #!/bin/bash
 
 # Job name:
-#SBATCH --job-name=YourJobname
+#SBATCH --job-name=MJMCMC RUN
 #
 # Project:
-#SBATCH --account=nnXXXXk
+#SBATCH --account=NN9862K
 #
 # Wall time limit:
-#SBATCH --time=DD-HH:MM:SS
+#SBATCH --time=01-12:00:00
 #
-# Other parameters:
-#SBATCH ...
 
 ## Set up job environment:
 set -o errexit  # Exit the script on any error
