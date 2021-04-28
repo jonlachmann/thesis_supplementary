@@ -54,7 +54,7 @@ run_sim <- function (loglik_fun, nobs, models, subs) {
     modelvector <- as.logical(c(T,intToBits(i)[1:15]))
     loglik <- loglik_fun(million_y_l[1:nobs], million_x[1:nobs,], modelvector, NULL, list(subs = subs))
     res[[index]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
-    if (index %% floor(length(models)/100) < 0.5) progress <- print.progressbar(progress, 100)
+    if (index %% max(floor(length(models)/100),1) == 0) progress <- print.progressbar(progress, 100)
     index <- index + 1
   }
   return(res)
