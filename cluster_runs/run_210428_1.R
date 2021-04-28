@@ -3,6 +3,9 @@
 # Created by: jonlachmann
 # Created on: 2021-04-28
 
+# Set path for packages
+.libPaths("/cluster/home/jola4668/R")
+
 # Load command line arguments
 args <- commandArgs(trailingOnly=TRUE)
 
