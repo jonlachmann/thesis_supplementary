@@ -19,7 +19,6 @@ library(RCurl)
 install_github("jonlachmann/GMJMCMC", build_vignettes=F)
 install_github("jonlachmann/irls.sgd", build_vignettes=F)
 
-install.packages("parallel", repos='http://cran.us.r-project.org')
 library(parallel)
 
 system.time(mjmcmc_10K_test <- mclapply(1:4, function (x) {
