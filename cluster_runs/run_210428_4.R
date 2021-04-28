@@ -26,7 +26,7 @@ full_1M_001 <- mclapply(1:32, function (x) {
 save(full_1M_001, file="full_1M_001.Rdata")
 
 full_1M_005 <- mclapply(1:32, function (x) {
-  run_sim(logistic.loglik.aic.irlssgd, 1000000, model_partitions[x,], 0.005)
+  run_sim(logistic.loglik.aic.irlssgd, 1000000, model_partitions[x,], 0.0005)
 }, mc.cores = num_cores)
 
 save(full_1M_005, file="full_1M_005.Rdata")

@@ -19,8 +19,14 @@ num_cores <- detectCores()
 
 model_partitions <- matrix(1:full_model_count, 32, byrow=T)
 
+full_1M_005 <- mclapply(1:32, function (x) {
+  run_sim(logistic.loglik.aic.irlssgd, 1000000, model_partitions[x,], 0.0005)
+}, mc.cores = num_cores)
+
+save(full_1M_005, file="full_1M_005.Rdata")
+
 full_100K_005 <- mclapply(1:32, function (x) {
-  run_sim(logistic.loglik.aic.irlssgd, 100000, model_partitions[x,], 0.005)
+  run_sim(logistic.loglik.aic.irlssgd, 100000, model_partitions[x,], 0.0005)
 }, mc.cores = num_cores)
 
 save(full_100K_005, file="full_100K_005.Rdata")
