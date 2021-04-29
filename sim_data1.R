@@ -21,6 +21,14 @@ full_model_count <- 2^nvars
   #million_y_eta <- (1/(1+exp(-million_y_g)))
   #million_y_l <- rbinom(nobs, 1, million_y_eta)
 }
+million_x_g <- cbind(1, rnorm(nobs, million_x[,7]*million_x[,15], 100),
+                     million_x[,3:12], rnorm(nobs, million_x[,7],10),
+                     rnorm(nobs, million_x[,8],10), rnorm(nobs), million_x[,16])
+million_y_g <- rnorm(nobs, ((million_x[,c(1,covars)]) %*% betas), 50)
+
+cormat <- cor(cbind(million_y_g, million_x_g))
+
+
 #save(covmat, file="data/sim_data1/covmat.Rdata")
 #save(covars, file="data/sim_data1/covars.Rdata")
 #save(betas, file="data/sim_data1/betas.Rdata")

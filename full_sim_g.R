@@ -43,14 +43,107 @@ full_sim_g_files <- list.files(path="data/full_enumeration/gaussian/")
 for (file in full_sim_g_files) load(file=paste0("data/full_enumeration/gaussian/",file))
 
 # Calculate the renormalized marginal probabilities
-full_10Kg_renorm <- matrix(NA, nvars, 7)
+full_10Kg_renorm <- matrix(NA, nvars, 8)
 full_10Kg_renorm[,1] <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
-full_10Kg_renorm[,2] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_10)
-full_10Kg_renorm[,3] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_5)
-full_10Kg_renorm[,4] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_1)
-full_10Kg_renorm[,5] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_05)
-full_10Kg_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_025)
-full_10Kg_renorm[,7] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_01)
+full_10Kg_renorm[,2] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_10)
+full_10Kg_renorm[,3] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_5)
+full_10Kg_renorm[,4] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_1)
+full_10Kg_renorm[,5] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_075)
+full_10Kg_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_05)
+full_10Kg_renorm[,7] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_025)
+full_10Kg_renorm[,8] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_01)
 
-barplot(t(full_10K_renorm), beside=T)
+hist(full_10Kg_mat[,17], breaks=50)
+
+par(mfrow=c(1,1))
+barplot(t(full_10Kg_renorm), beside=T)
 plot(cor(full_10K_renorm)[1,], type="l")
+
+load(file="data/full_enumeration/gaussian/old_full_10Kg_025.Rdata")
+
+full_10Kg_10_mat <- matrix(unlist(full_10Kg_10), ncol=18, byrow=T)
+full_10Kg_5_mat <- matrix(unlist(full_10Kg_5), ncol=18, byrow=T)
+full_10Kg_1_mat <- matrix(unlist(full_10Kg_1), ncol=18, byrow=T)
+full_10Kg_075_mat <- matrix(unlist(full_10Kg_075), ncol=18, byrow=T)
+full_10Kg_05_mat <- matrix(unlist(full_10Kg_05), ncol=18, byrow=T)
+full_10Kg_025_mat <- matrix(unlist(full_10Kg_025), ncol=18, byrow=T)
+full_10Kg_mat <- matrix(unlist(full_10Kg), ncol=18, byrow=T)
+
+compare_g <- matrix(NA,1000,7)
+compare_g[,1] <- full_10Kg_mat[1:1000,17]
+compare_g[,2] <- full_10Kg_10_mat[1:1000,17]
+compare_g[,3] <- full_10Kg_5_mat[1:1000,17]
+compare_g[,4] <- full_10Kg_1_mat[1:1000,17]
+compare_g[,5] <- full_10Kg_075_mat[1:1000,17]
+compare_g[,6] <- full_10Kg_05_mat[1:1000,17]
+compare_g[,7] <- full_10Kg_025_mat[1:1000,17]
+
+par(mfrow=c(1,1))
+multiplot(compare_g[,c(1,7)])
+
+for (i in 1:5000) {
+  set.seed(i)
+  full_10Kg_test <- run_sim(million_x, million_y_g, gaussian.loglik.aic.irlssgd, 10000, 12, 0.0075)
+  print(full_10Kg_test[[1]]$crit)
+  if (is.na(full_10Kg_test[[1]]$crit)) stop(paste0("NA occurred at seed ",i))
+  if (is.nan(full_10Kg_test[[1]]$crit)) stop(paste0("NaN occurred at seed ",i))
+  if (is.infinite(full_10Kg_test[[1]]$crit)) stop(paste0("Inf occurred at seed ",i))
+  if (i %% 100 == 0) print(i)
+}
+
+mill <- as.data.frame(cbind(million_x, million_y_g))
+
+
+simx <- as.matrix(read.table(text=getURL("https://raw.githubusercontent.com/aliaksah/EMJMCMC2016/master/examples/Simulated%20Data%20%28Example%201%29/simcen-x.txt")))
+simy <- as.matrix(read.table(text=getURL("https://raw.githubusercontent.com/aliaksah/EMJMCMC2016/master/examples/Simulated%20Data%20%28Example%201%29/simcen-y.txt")))
+simx <- cbind(1, simx)
+
+full_100g <- mclapply(1:32, function (x) {
+  run_sim(xvars, mill_y_g100, linear.g.prior.loglik, 100, model_partitions[x,], 1)
+}, mc.cores = num_cores, mc.preschedule = F)
+full_100g <- unlist(full_100g, recursive = F)
+
+full_10Kg <- mclapply(1:32, function (x) {
+  run_sim(xvars, mill_y_g10K, gaussian.loglik.aic, 10000, model_partitions[x,], 1)
+}, mc.cores = num_cores, mc.preschedule = F)
+full_10Kg <- unlist(full_10Kg, recursive = F)
+
+full_1Kg <- mclapply(1:32, function (x) {
+  run_sim(xvars, mill_y_g1K, linear.g.prior.loglik, 1000, model_partitions[x,], 1)
+}, mc.cores = num_cores, mc.preschedule = F)
+full_1Kg <- unlist(full_1Kg, recursive = F)
+
+full_2Kg <- mclapply(1:32, function (x) {
+  run_sim(xvars, mill_y_g2K, linear.g.prior.loglik, 2000, model_partitions[x,], 1)
+}, mc.cores = num_cores, mc.preschedule = F)
+full_2Kg <- unlist(full_2Kg, recursive = F)
+
+full_10Kg <- mclapply(1:32, function (x) {
+  run_sim(xvars, mill_y_g10K, linear.g.prior.loglik, 10000, model_partitions[x,], 1)
+}, mc.cores = num_cores, mc.preschedule = F)
+full_10Kg <- unlist(full_10Kg, recursive = F)
+mods1 <- run_sim(xvars, mill_y_g2K, linear.g.prior.loglik.irlssgd, 2000, model_partitions[1,], 1)
+mods2 <- run_sim(xvars, mill_y_g2K, linear.g.prior.loglik, 2000, model_partitions[1,], 1)
+
+mods1_mat <- matrix(unlist(mods1), ncol=18, byrow=T)
+mods2_mat <- matrix(unlist(mods2), ncol=18, byrow=T)
+
+compa <- matrix(NA,1024,2)
+compa[,1] <- mods1_mat[,17]
+compa[,2] <- mods2_mat[,17]
+multiplot(compa)
+
+full_10Kg_mat <- matrix(unlist(full_10Kg), ncol=18, byrow=T)
+
+GMJMCMC:::marginal.probs.renorm(full_10Kg)
+mattt <- matrix(NA,15,4)
+mattt[,1] <- GMJMCMC:::marginal.probs.renorm(full_100g)
+mattt[,2] <- GMJMCMC:::marginal.probs.renorm(full_1Kg)
+mattt[,3] <- GMJMCMC:::marginal.probs.renorm(full_2Kg)
+mattt[,4] <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
+GMJMCMC:::marginal.probs.renorm(full_1Kg)
+
+multiplot(mattt[,4])
+hist(full_10Kg_mat[(full_10Kg_mat[,17] > -10000),17], breaks=100)
+
+covmat <- cov(simx)

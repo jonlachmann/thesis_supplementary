@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Job name:
-#SBATCH --job-name=10K_irls.sgd
+#SBATCH --job-name=100K_irls.sgd
 #
 # Project:
 #SBATCH --account=NN9862K
 #
 # Wall time limit:
-#SBATCH --time=00-00:30:00
+#SBATCH --time=00-01:00:00
 #SBATCH --mem-per-cpu=3G
 #SBATCH --ntasks=32
 #
@@ -21,5 +21,5 @@ module load R/4.0.3-foss-2020b
 module list
 
 ## Do some work:
-Rscript cluster_runs/20210429/run_210429_1.R
+Rscript cluster_runs/20210429/run_210429_2.R
 tar -cf results.tar *.Rdata

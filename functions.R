@@ -11,6 +11,7 @@ multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), ...) {
   }
   mat <- as.matrix(mat)
   rbcol <- rainbow(ncol(mat))
+  print(rbcol)
   plot(mat[,1], type="l", ylim=ylim, col=rbcol[1], ...)
   if (ncol(mat) > 1) for (i in 2:ncol(mat)) lines(mat[,i], col=rbcol[i])
 }
@@ -52,7 +53,7 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
   index <- 1
   for (i in models) {
     modelvector <- as.logical(c(T,intToBits(i)[1:15]))
-    loglik <- loglik_fun(y[1:nobs], x[1:nobs,], modelvector, NULL, list(subs = subs))
+    loglik <- loglik_fun(y[1:nobs], x[1:nobs,], modelvector, NULL, list(subs = subs, g=100/sqrt(nobs/100)))
     res[[index]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
     if (index %% max(floor(length(models)/100),1) == 0) progress <- print.progressbar(progress, 100)
     index <- index + 1
