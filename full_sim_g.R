@@ -39,7 +39,18 @@ load("data/full_enumeration/logistic/full_1M_005.Rdata")
 full_1M_005 <- unlist(full_1M_005, recursive = F)
 save(full_1M_005, file="data/full_enumeration/logistic/full_1M_005.Rdata")
 
-load("../nobs")
-load("../w")
-load("../subs")
+full_sim_g_files <- list.files(path="data/full_enumeration/gaussian/")
+for (file in full_sim_g_files) load(file=paste0("data/full_enumeration/gaussian/",file))
 
+# Calculate the renormalized marginal probabilities
+full_10Kg_renorm <- matrix(NA, nvars, 7)
+full_10Kg_renorm[,1] <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
+full_10Kg_renorm[,2] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_10)
+full_10Kg_renorm[,3] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_5)
+full_10Kg_renorm[,4] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_1)
+full_10Kg_renorm[,5] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_05)
+full_10Kg_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_025)
+full_10Kg_renorm[,7] <- GMJMCMC:::marginal.probs.renorm(full_10K_sub_01)
+
+barplot(t(full_10K_renorm), beside=T)
+plot(cor(full_10K_renorm)[1,], type="l")

@@ -34,7 +34,7 @@ full_10Kg_025 <- mclapply(1:32, function (x) {
   run_sim(million_x, million_y_g, gaussian.loglik.aic.irlssgd, 10000, model_partitions[x,], 0.0025)
 }, mc.cores = num_cores)
 full_10Kg_025 <- unlist(full_10Kg_025, recursive = F)
-save(full_10Kg_025, file="full_10Kg_025.Rdata")
+save(full_10Kg_025, file= "full_10Kg_025.Rdata")
 
 full_10Kg_05 <- mclapply(1:32, function (x) {
   run_sim(million_x, million_y_g, gaussian.loglik.aic.irlssgd, 10000, model_partitions[x,], 0.005)

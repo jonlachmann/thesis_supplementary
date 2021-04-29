@@ -22,3 +22,4 @@ module list
 
 ## Do some work:
 Rscript cluster_runs/20210429/run_210429_1.R
+tar -cf results.tar *.Rdata
