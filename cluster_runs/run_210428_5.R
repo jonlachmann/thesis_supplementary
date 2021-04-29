@@ -17,6 +17,8 @@ source("functions.R")
 
 num_cores <- detectCores()
 
+options(warn=1)
+
 model_partitions <- matrix(1:full_model_count, 32, byrow=T)
 
 full_1M_005 <- mclapply(1:32, function (x) {

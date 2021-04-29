@@ -24,7 +24,7 @@ sim_probs <- gen.probs.list()
 sim_pars <- gen.params.list(data_10K)
 
 #mjmcmc_10K <- mjmcmc(cbind(million_y_l, million_x)[1:10000,], logistic.loglik.aic, 5000, sim_probs, sim_pars)
-#save(mjmcmc_10K, file="data/mjmcmc_sim/mjmcmc_10K")
+#save(mjmcmc_10K, file="data/mjmcmc/mjmcmc_10K")
 load(file="data/mjmcmc_sim/mjmcmc_10K.Rdata")
 
 mjmcmc_10K_conv <- vector("list", 20)

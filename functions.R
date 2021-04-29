@@ -46,13 +46,14 @@ rmse_conv <- function (full, sim, steps) {
 }
 
 # Function for running simulations on many models with varying subsample size
-run_sim <- function (loglik_fun, nobs, models, subs) {
+run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
   res <- vector("list", length(models))
   progress <- 0
   index <- 1
   for (i in models) {
+    print(i)
     modelvector <- as.logical(c(T,intToBits(i)[1:15]))
-    loglik <- loglik_fun(million_y_l[1:nobs], million_x[1:nobs,], modelvector, NULL, list(subs = subs))
+    loglik <- loglik_fun(y[1:nobs], x[1:nobs,], modelvector, NULL, list(subs = subs))
     res[[index]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
     if (index %% max(floor(length(models)/100),1) == 0) progress <- print.progressbar(progress, 100)
     index <- index + 1
