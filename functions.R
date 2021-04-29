@@ -51,7 +51,6 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
   progress <- 0
   index <- 1
   for (i in models) {
-    print(i)
     modelvector <- as.logical(c(T,intToBits(i)[1:15]))
     loglik <- loglik_fun(y[1:nobs], x[1:nobs,], modelvector, NULL, list(subs = subs))
     res[[index]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)

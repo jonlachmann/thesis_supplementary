@@ -7,13 +7,13 @@
 .libPaths("/cluster/home/jola4668/R")
 
 # Load packages
-source("packages.R")
+source("../../packages.R")
 # Simulate data
-source("sim_data1.R")
+source("../../sim_data1.R")
 # Load likelihood functions
-source("likelihoods1.R")
+source("../../likelihoods1.R")
 # Load common functions
-source("functions.R")
+source("../../functions.R")
 
 num_cores <- detectCores()
 

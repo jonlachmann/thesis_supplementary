@@ -39,4 +39,7 @@ load("data/full_enumeration/logistic/full_1M_005.Rdata")
 full_1M_005 <- unlist(full_1M_005, recursive = F)
 save(full_1M_005, file="data/full_enumeration/logistic/full_1M_005.Rdata")
 
+load("../nobs")
+load("../w")
+load("../subs")
 

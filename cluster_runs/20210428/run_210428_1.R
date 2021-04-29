@@ -10,13 +10,13 @@
 args <- commandArgs(trailingOnly=TRUE)
 
 # Load packages
-source("packages.R")
+source("../../packages.R")
 # Simulate data
-source("sim_data1.R")
+source("../../sim_data1.R")
 # Load likelihood functions
-source("likelihoods1.R")
+source("../../likelihoods1.R")
 # Load common functions
-source("functions.R")
+source("../../functions.R")
 
 num_cores <- detectCores()
 
@@ -31,4 +31,4 @@ mjmcmc_10K_res <- mclapply(1:7, function (x) {
   mjmcmc(data_10K, logistic.loglik.aic, 6554, sim_probs, sim_pars)
 }, mc.cores = num_cores)
 
-save(mjmcmc_10K_res, file="mjmcmc_10K_res.Rdata")
+save(mjmcmc_10K_res, file= "../../mjmcmc_10K_res.Rdata")
