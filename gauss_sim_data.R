@@ -10,7 +10,9 @@ nobs <- 10^6
 full_model_count <- 2^nvars
 
 set.seed(1911)
-covmat <- cov(read.table(text=getURL("https://raw.githubusercontent.com/aliaksah/EMJMCMC2016/master/examples/Simulated%20Data%20%28Example%201%29/simcen-x.txt")))
+#save(covmat, file="data/covmat.Rdata")
+#covmat <- cov(read.table(text=getURL("https://raw.githubusercontent.com/aliaksah/EMJMCMC2016/master/examples/Simulated%20Data%20%28Example%201%29/simcen-x.txt")))
+load(file="data/covmat.Rdata")
 
 mill_x_g <- matrix(rmvnorm(nobs, rnorm(nvars), covmat), nobs)
 
