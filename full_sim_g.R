@@ -40,7 +40,7 @@ load("data/full_enumeration/logistic/full_1M_005.Rdata")
 full_1M_005 <- unlist(full_1M_005, recursive = F)
 save(full_1M_005, file="data/full_enumeration/logistic/full_1M_005.Rdata")
 
-full_sim_g_files <- list.files(path="data/full_enumeration/gaussian/")
+full_sim_g_files <- list.files(path="data/full_enumeration/gaussian/", pattern=".Rdata")
 for (file in full_sim_g_files) load(file=paste0("data/full_enumeration/gaussian/",file))
 
 # Calculate the renormalized marginal probabilities

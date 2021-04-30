@@ -49,23 +49,3 @@ for (i in 1:8) {
   abline(v=length(irlssgd_res_g$irls_hist[,i]))
 }
 mtext("Convergence of parameter estimates in S-IRLS-SGD for a Gaussian model", outer = TRUE, cex = 1.5)
-par(mfrow())
-conv_plot(irlssgd_res_g, true_glm_res_g$coefficients)
-
-conv_plot <- function (result, true_coeffs=NULL, x=NULL, y=NULL, family=binomial()) {
-  if (is.null(true_coeffs) & !is.null(x) & !is.null(y)) {
-    cat("Estimating full model...\n")
-    true_coeffs <- glm.fit(x, y, family=gaussian())$coefficients
-  }
-  for (i in 1:ncol(result$irls_hist)) {
-    if (!is.null(true_coeffs)) {
-      multiplot(cbind(c(result$irls_hist[,i], result$sgd_hist[,i]), true_coeffs[i]),
-                frame.plot=F, ylab=bquote(beta[.(i-1)]), xlab="Iteration")
-    }
-    else {
-      multiplot(c(result$irls_hist[,i], result$sgd_hist[,i]),
-                frame.plot=F, ylab=bquote(beta[.(i-1)]), xlab="Iteration")
-    }
-    abline(v=length(result$irls_hist[,i]))
-  }
-}
