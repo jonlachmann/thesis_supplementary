@@ -3,6 +3,14 @@
 # Created by: jonlachmann
 # Created on: 2021-04-30
 
+library(gplots)
+
+# Correlation plot for example 1
 cormat <- cor(mill_x_g[,-1])
-lower.tri(cormat)
-heatmap(cormat, Colv=NA, Rowv=NA, symm=T)
+rownames(cormat) <- paste0("x",1:15)
+colnames(cormat) <- paste0("x",1:15)
+col <- colorRampPalette(c("white", "black"))(20)
+heatmap.2(abs(cormat), Rowv=F, Colv=F, dendrogram="none", col=col, density.info = "none", trace="none",
+          key.par=list(mar=c(3.5,0,3,0)),
+          margins=c(3,0), key.title=NA, key.xlab=NA,
+          lmat=rbind(c(5, 4, 2), c(6, 1, 3)), lhei=c(1.25, 5), lwid=c(1, 10, 1))

@@ -18,7 +18,7 @@ options(warn=1)
 n_obs <- 100000
 dirname <- create_randdir()
 set.seed(dirname)
-basename <- paste0(dirname, "_full_100Kg")
+basename <- paste0("run",dirname, "_full_100Kg")
 subs_list <- c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
 # Run using full data

@@ -11,7 +11,6 @@ multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), legend=F, na
   }
   mat <- as.matrix(mat)
   rbcol <- rainbow(ncol(mat))
-  print(rbcol)
   plot(mat[,1], type="l", ylim=ylim, col=rbcol[1], ...)
   if (ncol(mat) > 1) for (i in 2:ncol(mat)) lines(mat[,i], col=rbcol[i])
   if (legend) {
