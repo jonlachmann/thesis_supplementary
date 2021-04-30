@@ -7,7 +7,7 @@
 #SBATCH --account=NN9862K
 #
 # Wall time limit:
-#SBATCH --time=00-02:00:00
+#SBATCH --time=00-02:30:00
 #SBATCH --mem-per-cpu=3G
 #SBATCH --ntasks=32
 #

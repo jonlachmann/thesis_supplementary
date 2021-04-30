@@ -73,7 +73,6 @@ run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, director
   simres <- unlist(simres, recursive = F)
   assign(name, simres)
   filename <- paste0(directory,"/",name,".Rdata")
-  str(name)
   eval(parse(text=paste0("save(",name,", file=\"",filename,"\")")))
 }
 
