@@ -4,7 +4,7 @@
 # Created on: 2021-04-26
 
 # Plot many columns in a matrix, log scale can be enabled too
-multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), ...) {
+multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), legend=F, names=names(mat), ...) {
   if (logscale) {
     mat[mat > 0] <- log(mat[mat > 0])
     mat[mat < 0] <- -log(-mat[mat < 0])
@@ -14,6 +14,10 @@ multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), ...) {
   print(rbcol)
   plot(mat[,1], type="l", ylim=ylim, col=rbcol[1], ...)
   if (ncol(mat) > 1) for (i in 2:ncol(mat)) lines(mat[,i], col=rbcol[i])
+  if (legend) {
+    if (is.null(names)) names <- 1:ncol(mat)
+    legend("bottomright", col=rbcol, legend=names, lty=1)
+  }
 }
 
 # Print a progress bar while iterating over a population
@@ -59,6 +63,25 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
     index <- index + 1
   }
   return(res)
+}
+
+# Function for running a multicore simulation and save the results properly
+run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, directory) {
+  simres <- mclapply(1:nrow(model_parts), function (mods) {
+    run_sim(x, y, loglik, n_obs, model_parts[mods,], subs)
+  }, mc.cores = nrow(model_parts), mc.preschedule = F)
+  simres <- unlist(simres, recursive = F)
+  assign(name, simres)
+  filename <- paste0(directory,"/",name,".Rdata")
+  str(name)
+  eval(parse(text=paste0("save(",name,", file=\"",filename,"\")")))
+}
+
+create_randdir <- function () {
+  dirname <- as.character(sample.int(1911, 1))
+  while (dir.exists(dirname)) dirname <- as.character(sample.int(1911, 1))
+  dir.create(dirname)
+  return(dirname)
 }
 
 # Function for calculating the quantiles and mean of many matrices

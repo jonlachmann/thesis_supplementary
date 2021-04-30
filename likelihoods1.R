@@ -34,7 +34,7 @@ linear.g.prior.loglik.irlssgd <- function (y, x, model, complex, params) {
   mod <- irls.sgd(as.matrix(x[,model]), y, gaussian(),
             irls.control=list(subs=params$subs, maxit=20, tol=1e-7, cooling = c(1,0.9,0.75), expl = c(3,1.5,1)),
             sgd.control=list(subs=params$subs, maxit=250, alpha=0.001, decay=0.99, histfreq=10))
-  rsquared <- 1-sum(var(y-x[,model]%*%mod$coefficients))/sum(var(y))
+  rsquared <- 1-sum(var(y-x[,model,drop=F]%*%mod$coefficients))/sum(var(y))
   p <- mod$rank
   n <- nrow(x)
   logmarglik <- 0.5*(log(1+params$g)*(n-p) - log(1+params$g*(1-rsquared))*(n-1))*(p!=1)

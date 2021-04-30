@@ -25,6 +25,7 @@ load("data/full_10K_g.Rdata")
 
 full_10Kg_sub_1_mat <- matrix(unlist(full_10Kg_sub_1), ncol=18, byrow=T)
 full_10K_g_mat <- matrix(unlist(full_10Kg), ncol=18, byrow=T)
+testmat <- matrix(unlist(full_100Kg_005), ncol=18, byrow=T)
 
 compare_g <- matrix(NA,1000,2)
 compare_g[,1] <- full_10K_g_mat[1:1000,17]
@@ -53,11 +54,48 @@ full_10Kg_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_05)
 full_10Kg_renorm[,7] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_025)
 full_10Kg_renorm[,8] <- GMJMCMC:::marginal.probs.renorm(full_10Kg_01)
 
-hist(full_10Kg_mat[,17], breaks=50)
+full_100Kg_renorm <- matrix(NA, nvars, 8)
+full_100Kg_renorm[,1] <- GMJMCMC:::marginal.probs.renorm(full_100Kg)
+full_100Kg_renorm[,2] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_5)
+full_100Kg_renorm[,3] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_1)
+full_100Kg_renorm[,4] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_075)
+full_100Kg_renorm[,5] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_05)
+full_100Kg_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_025)
+full_100Kg_renorm[,7] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_01)
+full_100Kg_renorm[,8] <- GMJMCMC:::marginal.probs.renorm(full_100Kg_005)
+
+barplot(t(full_100Kg_renorm), beside=T)
+multiplot(full_100Kg_renorm, legend=T, names=c("Full", "5%", "1%", "0.75%", "0.5%", "0.25%", "0.1%", "0.05%"))
+barplot(t(GMJMCMC:::marginal.probs.renorm(full_100Kg)), beside=T)
+cor(full_100Kg_renorm)
+
+par(mfrow=c(3,5))
+for (i in 1:15) {
+  multiplot(abs(full_100Kg_renorm[i,]-full_100Kg_renorm[i,1]))
+}
+
+compare_100kg <- matrix(NA, full_model_count, 8)
+compare_100kg[,1] <- (matrix(unlist(full_100Kg), ncol=18, byrow=T)[,17])
+compare_100kg[,2] <- (matrix(unlist(full_100Kg_5), ncol=18, byrow=T)[,17])
+compare_100kg[,3] <- (matrix(unlist(full_100Kg_1), ncol=18, byrow=T)[,17])
+compare_100kg[,4] <- (matrix(unlist(full_100Kg_075), ncol=18, byrow=T)[,17])
+compare_100kg[,5] <- (matrix(unlist(full_100Kg_05), ncol=18, byrow=T)[,17])
+compare_100kg[,6] <- (matrix(unlist(full_100Kg_025), ncol=18, byrow=T)[,17])
+compare_100kg[,7] <- (matrix(unlist(full_100Kg_01), ncol=18, byrow=T)[,17])
+compare_100kg[,8] <- (matrix(unlist(full_100Kg_005), ncol=18, byrow=T)[,17])
+
+best50_100K <- compare_100kg[,1] > 588.919
+multiplot(compare_100kg[best50_100K,1:8], legend=T)
+
+compare_100kg[best50_100K,3]
+
+cor(compare_100kg[best50_100K,1:8])
+
+hist(full_100Kg_mat[,17], breaks=50)
 
 par(mfrow=c(1,1))
 barplot(t(full_10Kg_renorm), beside=T)
-plot(cor(full_10K_renorm)[1,], type="l")
+plot(cor(full_100Kg_renorm)[1,], type="l")
 
 load(file="data/full_enumeration/gaussian/old_full_10Kg_025.Rdata")
 
