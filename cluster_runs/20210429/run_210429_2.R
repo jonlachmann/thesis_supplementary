@@ -12,8 +12,10 @@ source("functions.R")
 
 # Set up simulation parameters
 num_cores <- detectCores()
-model_partitions <- matrix(1:full_model_count, 32, byrow=T)
+model_partitions <- matrix(1:full_model_count, 64, byrow=T)
 options(warn=1)
+
+set.seed(Sys.time())
 
 n_obs <- 100000
 dirname <- create_randdir()

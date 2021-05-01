@@ -9,7 +9,7 @@
 # Wall time limit:
 #SBATCH --time=00-02:30:00
 #SBATCH --mem-per-cpu=3G
-#SBATCH --ntasks=32
+#SBATCH --ntasks=64
 #
 
 ## Set up job environment:
