@@ -18,3 +18,4 @@ full_1M_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_1M_001)
 barplot(t(full_1M_renorm), beside=T)
 cor(full_1M_renorm)
 
+mattt <- matrix(unlist(run1135_full_100Kl), ncol=18, byrow=T)

@@ -7,11 +7,14 @@ source("packages.R")
 source("functions.R")
 
 # Load all the data
-gauss_100K_files <- list.files(path="data/full_enumeration/gaussian/", pattern=".Rdata")
-for (file in gauss_100K_files) load(file=paste0("data/full_enumeration/gaussian/",file))
+gauss_100K_files <- list.files(path="data/full_enumeration/gaussian/100K/", pattern=".Rdata")
+for (file in gauss_100K_files) load(file=paste0("data/full_enumeration/gaussian/100K/",file))
 
 # Set up parameters for analysis
 runs <- sub("...", "",unique(regmatches(ls(), regexpr("run[0-9]*", ls()))))
+for (i in 1:length(runs)) {
+  if (runs[i] == "") runs <- runs[-i]
+}
 subs_list <- c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
 source("gauss_sim_data.R")
@@ -31,6 +34,8 @@ for (i in 1:length(runs)) {
   }
   renormalized_estimates[[i]] <- renorm
 }
+
+save(renormalized_estimates, file="data/full_enumeration/gaussian/100K/renorm.Rdata")
 
 meanquant <- matrix_quantmean(renormalized_estimates)
 
