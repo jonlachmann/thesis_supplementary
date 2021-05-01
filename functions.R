@@ -67,6 +67,7 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
 
 # Function for running a multicore simulation and save the results properly
 run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, directory) {
+  cat(paste0("\n", "Running ", name, " simulation.\n"))
   simres <- mclapply(1:nrow(model_parts), function (mods) {
     run_sim(x, y, loglik, n_obs, model_parts[mods,], subs)
   }, mc.cores = nrow(model_parts), mc.preschedule = F)
@@ -74,6 +75,18 @@ run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, director
   assign(name, simres)
   filename <- paste0(directory,"/",name,".Rdata")
   eval(parse(text=paste0("save(",name,", file=\"",filename,"\")")))
+  cat(paste0("\n", name, " simulation done.\n"))
+
+}
+
+# Function to align model matrix with the number of cores available
+align_models <- function (models) {
+  num_cores <- detectCores()
+  if ((full_model_count %% num_cores) != 0) {
+    models <- c(models, rep(NA, (num_cores-(full_model_count %% num_cores))))
+  }
+  model_partitions <- matrix(models, num_cores, byrow=T)
+  return(model_partitions)
 }
 
 create_randdir <- function () {
@@ -98,4 +111,13 @@ matrix_quantmean <- function (matlist, quantiles=c(0.05, 0.95)) {
   mat_low <- matrix(apply(mat_all, 1, quantile, probs = quantiles[1]), nrow(matlist[[1]]), ncol(matlist[[1]]))
   mat_high <- matrix(apply(mat_all, 1, quantile, probs = quantiles[2]), nrow(matlist[[1]]), ncol(matlist[[1]]))
   return(list(mean=mat_mean, low=mat_low, high=mat_high))
+}
+
+# Function for creating a plot with confidence intervals
+ci_plot <- function(data, row, ...) {
+  x_size <- ncol(data$mean)
+  plot(-10, xlim=c(0,x_size), ylim=c(0,max(data$high[row,])), ...)
+  polygon(c(1:x_size, x_size:1), c(data$low[row,], rev(data$high[row,])),
+        col="lightgrey", border=NA)
+  lines(data$mean[row,])
 }

@@ -4,6 +4,7 @@
 # Created on: 2021-04-29
 
 source("packages.R")
+source("functions.R")
 
 # Load all the data
 gauss_100K_files <- list.files(path="data/full_enumeration/gaussian/", pattern=".Rdata")
@@ -21,22 +22,28 @@ base_renorm <- GMJMCMC:::marginal.probs.renorm(full_100Kg)
 renormalized_estimates <- vector("list", length(runs))
 for (i in 1:length(runs)) {
   renorm <- matrix(NA, nvars, length(subs_list)+1)
-  renorm[,1] <- base_renorm
+  renorm[,1] <- 0
   for (j in 1:length(subs_list)) {
     run_name <- paste0("run",runs[i], "_full_100Kg",subs_list[j]*100)
     run_name <- gsub("\\.", "", run_name)
-    renorm[,j+1] <- GMJMCMC:::marginal.probs.renorm(eval(parse(text=run_name)))
+    renorm[,j+1] <- abs(GMJMCMC:::marginal.probs.renorm(eval(parse(text=run_name))) - base_renorm)
     print(run_name)
   }
   renormalized_estimates[[i]] <- renorm
 }
 
-for (i in 1:19) print(renormalized_estimates[[i]][2,2])
+meanquant <- matrix_quantmean(renormalized_estimates)
+
+par(mfrow=c(3,5))
+for (i in 1:15) {
+  ci_plot(meanquant, i, ylab="Absolute difference", xlab="Subsample size")
+}
 
 
-GMJMCMC:::marginal.probs.renorm(run1218_full_100Kg1)
+GMJMCMC:::marginal.probs.renorm(run1172_full_100Kg20)
+GMJMCMC:::marginal.probs.renorm(full_100Kg)
 
-model.size <- length(run1218_full_100Kg1[[1]]$model)
+model.size <- length(run11_full_100Kg1[[1]]$model)
 models.matrix <- matrix(unlist(run1218_full_100Kg1), ncol = model.size + 3, byrow = T)
 models.matrix <- models.matrix[(!duplicated(models.matrix[, 2 : (model.size + 1)], dim = 1)), ]
 max_mlik <- max(models.matrix[, (model.size + 2)])
