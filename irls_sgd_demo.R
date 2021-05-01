@@ -4,7 +4,7 @@
 # Created on: 2021-04-26
 
 # Simulate data
-source("sim_data1.R")
+source("logis_sim_data.R")
 # Load common functions
 source("functions.R")
 

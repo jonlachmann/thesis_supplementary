@@ -12,7 +12,7 @@ args <- commandArgs(trailingOnly=TRUE)
 # Load packages
 source("../../packages.R")
 # Simulate data
-source("../../sim_data1.R")
+source("../../logis_sim_data.R")
 # Load likelihood functions
 source("../../likelihoods1.R")
 # Load common functions
