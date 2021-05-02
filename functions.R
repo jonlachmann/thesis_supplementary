@@ -51,7 +51,9 @@ rmse_conv <- function (full, sim, steps) {
 
 # Function for running simulations on many models with varying subsample size
 run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
+  worker_id <- (models[1]-1) / length(models)
   models <- models[!is.na(models)]
+  cat(paste0("\n","Worker: ",worker_id," simulating ", length(models)," models.\n"))
   res <- vector("list", length(models))
   progress <- 0
   index <- 1
@@ -61,10 +63,12 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
     res[[index]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
     if (index %% max(floor(length(models)/100),1) == 0) {
       progress <- print.progressbar(progress, 100)
+      cat(worker_id)
       gc()
     }
     index <- index + 1
   }
+  cat(paste0("\n","Worker: ",worker_id," done simulating ", length(models)," models.\n"))
   return(res)
 }
 
@@ -79,7 +83,26 @@ run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, director
   filename <- paste0(directory,"/",name,".Rdata")
   eval(parse(text=paste0("save(",name,", file=\"",filename,"\")")))
   cat(paste0("\n", name, " simulation done.\n"))
+}
 
+# Function for running a cluster simulation and save the results properly
+run_clustersim <- function (x, y, loglik, model_parts, n_obs, subs, name, directory) {
+  cat(paste0("\n", "Running ", name, " simulation.\n"))
+  logfile <- paste0(directory,"/run",directory,".log")
+  clust <- makeCluster(nrow(model_parts), outfile=logfile)
+  clusterExport(clust, varlist=c("x", "y", "model_parts", "n_obs", "subs"), envir=environment())
+  simres <- parLapply(clust, 1:nrow(model_parts), function (mods) {
+    source("packages.R")
+    source("likelihoods1.R")
+    source("functions.R")
+    run_sim(x, y, loglik, n_obs, model_parts[mods,], subs)
+  })
+  stopCluster(clust)
+  simres <- unlist(simres, recursive = F)
+  assign(name, simres)
+  filename <- paste0(directory,"/",name,".Rdata")
+  eval(parse(text=paste0("save(",name,", file=\"",filename,"\")")))
+  cat(paste0("\n", name, " simulation done.\n"))
 }
 
 # Function to align model matrix with the number of cores available

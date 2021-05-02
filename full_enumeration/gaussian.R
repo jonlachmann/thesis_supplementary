@@ -7,6 +7,10 @@ source("packages.R")
 source("functions.R")
 
 # Load all the data
+gauss_10K_files <- list.files(path="data/full_enumeration/gaussian/10K/", pattern=".Rdata")
+for (file in gauss_10K_files) load(file=paste0("data/full_enumeration/gaussian/10K/",file))
+
+# Load all the data
 gauss_100K_files <- list.files(path="data/full_enumeration/gaussian/100K/", pattern=".Rdata")
 for (file in gauss_100K_files) load(file=paste0("data/full_enumeration/gaussian/100K/",file))
 
@@ -21,7 +25,7 @@ source("gauss_sim_data.R")
 
 base_renorm <- GMJMCMC:::marginal.probs.renorm(full_100Kg)
 
-# Get all the renormalized estimates
+# Get all the renormalized estimates for 100K
 renormalized_estimates <- vector("list", length(runs))
 for (i in 1:length(runs)) {
   renorm <- matrix(NA, nvars, length(subs_list)+1)
@@ -36,6 +40,24 @@ for (i in 1:length(runs)) {
 }
 
 save(renormalized_estimates, file="data/full_enumeration/gaussian/100K/renorm.Rdata")
+
+base_renorm <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
+
+# Get all the renormalized estimates for 10K
+renormalized_estimates <- vector("list", length(runs))
+for (i in 1:length(runs)) {
+  renorm <- matrix(NA, nvars, length(subs_list)+1)
+  renorm[,1] <- 0
+  for (j in 1:length(subs_list)) {
+    run_name <- paste0("run",runs[i], "_full_10Kg",subs_list[j]*100)
+    run_name <- gsub("\\.", "", run_name)
+    renorm[,j+1] <- abs(GMJMCMC:::marginal.probs.renorm(eval(parse(text=run_name))) - base_renorm)
+    print(run_name)
+  }
+  renormalized_estimates[[i]] <- renorm
+}
+
+save(renormalized_estimates, file="data/full_enumeration/gaussian/10K/renorm.Rdata")
 
 meanquant <- matrix_quantmean(renormalized_estimates)
 
