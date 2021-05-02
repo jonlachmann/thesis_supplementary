@@ -19,3 +19,16 @@ barplot(t(full_1M_renorm), beside=T)
 cor(full_1M_renorm)
 
 mattt <- matrix(unlist(run1135_full_100Kl), ncol=18, byrow=T)
+
+for (i in 1:full_model_count) {
+  run917_full_100Kl[[1]]$crit <- run917_full_100Kl[[1]]$crit + sum(run917_full_100Kl[[1]]$model) + 1
+  run917_full_100Kl[[1]]$crit <- run917_full_100Kl[[1]]$crit -
+    0.5 * (sum(run917_full_100Kl[[1]]$model) + 1) * log(100000)
+}
+
+logistic.loglik.aic(million_y_l[1:10000], million_x[1:10000,], c(T,run978_full_10Kl[[1]]$model))
+logistic.loglik.bic(million_y_l[1:10000], million_x[1:10000,], c(T,run978_full_10Kl[[1]]$model))
+
+tes <- run978_full_10Kl[[1]]$crit + sum(run978_full_10Kl[[1]]$model) + 1
+  tes <- tes -
+    0.5 * (sum(run978_full_10Kl[[1]]$model) + 1) * log(10000)
