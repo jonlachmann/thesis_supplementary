@@ -92,6 +92,7 @@ run_clustersim <- function (x, y, loglik, model_parts, n_obs, subs, name, direct
   clust <- makeCluster(nrow(model_parts), outfile=logfile)
   clusterExport(clust, varlist=c("x", "y", "model_parts", "n_obs", "subs"), envir=environment())
   simres <- parLapply(clust, 1:nrow(model_parts), function (mods) {
+    .libPaths("/cluster/home/jola4668/R")
     source("packages.R")
     source("likelihoods1.R")
     source("functions.R")
