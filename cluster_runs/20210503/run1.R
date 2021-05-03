@@ -2,6 +2,7 @@
 .libPaths("/cluster/home/jola4668/R")
 
 args <- commandArgs(trailingOnly=TRUE)
+print(argss[1])
 
 # Load packages, data, likelihood functions and general functions
 source("packages.R")
@@ -17,7 +18,7 @@ n_obs <- 10000
 dirname <- create_randdir()
 set.seed(as.numeric(dirname)+Sys.time())
 basename <- paste0("run",dirname, "_mjmcmc_10Kg")
-sub_size <- args[1] # 0.05 #,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+sub_size <- as.numeric(args[1]) # 0.05 #,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 run_count <- 20
 iter <- round(32768*0.5)
 
