@@ -143,8 +143,65 @@ matrix_quantmean <- function (matlist, quantiles=c(0.05, 0.95)) {
 # Function for creating a plot with confidence intervals
 ci_plot <- function(data, row, ...) {
   x_size <- ncol(data$mean)
-  plot(-10, xlim=c(0,x_size), ylim=c(0,max(data$high[row,])), ...)
+  plot(-10, xlim=c(1,x_size), ylim=c(0,max(data$high[row,])), ...)
   polygon(c(1:x_size, x_size:1), c(data$low[row,], rev(data$high[row,])),
         col="lightgrey", border=NA)
   lines(data$mean[row,])
+}
+
+# Function for getting the renormalized comparison to the real values
+renorm_compare <- function (basename, runs, true_renorm) {
+  renormalized_estimates <- vector("list", length(runs))
+  for (i in 1:length(runs)) {
+    renorm <- matrix(NA, nvars, length(subs_list)+1)
+    renorm[,1] <- 0
+    for (j in 1:length(subs_list)) {
+      run_name <- paste0("run",runs[i], "_",basename,subs_list[j]*100)
+      run_name <- gsub("\\.", "", run_name)
+      renorm[,j+1] <- abs(GMJMCMC:::marginal.probs.renorm(eval(parse(text=run_name))) - true_renorm)
+      print(run_name)
+    }
+    renormalized_estimates[[i]] <- renorm
+  }
+  return(renormalized_estimates)
+}
+
+# Function for getting the renormalized comparison to the real values
+renorm_best <- function (basename, runs, count) {
+  best_renorm <- vector("list", length(subs_list))
+  for (i in 1:length(subs_list)) {
+    best_mods <- vector("list", full_model_count)
+    sub_mlik <- matrix(NA, full_model_count, count)
+    runs_use <- sample.int(length(runs), count, replace = F)
+    for (j in 1:length(runs_use)) {
+      run_name <- paste0("run",runs[runs_use[j]], "_",basename,subs_list[i]*100)
+      run_name <- gsub("\\.", "", run_name)
+      sub_mlik[,j] <- matrix(unlist(eval(parse(text=run_name))), full_model_count, 18, byrow=T)[,17]
+      print(run_name)
+    }
+    max_mliks <- apply(sub_mlik, 1, max)
+    for (mod in 1:full_model_count) {
+      modvec <- as.logical(intToBits(mod)[1:15])
+      best_mods[[mod]] <- list(prob=NA, model=modvec, crit=max_mliks[mod], alpha=NA)
+    }
+    best_renorm[[i]] <- GMJMCMC:::marginal.probs.renorm(best_mods)
+  }
+  return(best_renorm)
+}
+
+# Function for collecting all marginal likelihoods
+mlik_collect <- function (basename, runs) {
+  all_mliks <- vector("list", length(runs))
+  for (i in 1:length(runs)) {
+    mliks <- matrix(NA, full_model_count, length(subs_list)+1)
+    mliks[,1] <- matrix(unlist(eval(parse(text=basename))), full_model_count, byrow=T)[,17]
+    for (j in 1:length(subs_list)) {
+      run_name <- paste0("run",runs[i], "_",basename,subs_list[j]*100)
+      run_name <- gsub("\\.", "", run_name)
+      mliks[,j+1] <- matrix(unlist(eval(parse(text=run_name))), full_model_count, byrow=T)[,17]
+      print(run_name)
+    }
+    all_mliks[[i]] <- mliks
+  }
+  return(all_mliks)
 }

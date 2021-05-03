@@ -5,66 +5,62 @@
 
 source("packages.R")
 source("functions.R")
+source("gauss_sim_data.R")
 
-# Load all the data
-gauss_10K_files <- list.files(path="data/full_enumeration/gaussian/10K/", pattern=".Rdata")
-for (file in gauss_10K_files) load(file=paste0("data/full_enumeration/gaussian/10K/",file))
+run <- "100K"
 
-# Load all the data
-gauss_100K_files <- list.files(path="data/full_enumeration/gaussian/100K/", pattern=".Rdata")
-for (file in gauss_100K_files) load(file=paste0("data/full_enumeration/gaussian/100K/",file))
+## Load files
+gaussian_full_files <- list.files(path=paste0("data/full_enumeration/gaussian/",run,"/"))
+for (file in gaussian_full_files) load(file=paste0("data/full_enumeration/gaussian/",run,"/",file))
+
+## Inspect results
+# Check if there are any runs with the wrong number of models
+for (i in ls()) {
+  if (length(eval(parse(text=i))) != full_model_count) print(paste0(i,": ",length(eval(parse(text=i)))))
+}
+# Make histograms of all the mliks to see that we do not appear to have any oddities
+all_mliks <- mlik_collect(basename, runs)
+par(mfrow=c(2,5), mar=rep(2,4))
+for (i in 1:20) for (j in 1:10) hist(all_mliks[[i]][,j], breaks=100)
+
+# Calculate correlation for all of the mliks, again to make a sanity check
+all_mliks_cor <- matrix(NA, 20,10)
+for (i in 1:20) all_mliks_cor[i,] <- cor(all_mliks[[i]])[1,]
 
 # Set up parameters for analysis
 runs <- sub("...", "",unique(regmatches(ls(), regexpr("run[0-9]*", ls()))))
-for (i in 1:length(runs)) {
-  if (runs[i] == "") runs <- runs[-i]
-}
+runs <- runs[-(runs == "")]
 subs_list <- c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
-source("gauss_sim_data.R")
+basename <- paste0("full_",run,"g")
 
-base_renorm <- GMJMCMC:::marginal.probs.renorm(full_100Kg)
+base_renorm <- GMJMCMC:::marginal.probs.renorm(eval(parse(text=basename)))
 
 # Get all the renormalized estimates for 100K
-renormalized_estimates <- vector("list", length(runs))
-for (i in 1:length(runs)) {
-  renorm <- matrix(NA, nvars, length(subs_list)+1)
-  renorm[,1] <- 0
-  for (j in 1:length(subs_list)) {
-    run_name <- paste0("run",runs[i], "_full_100Kg",subs_list[j]*100)
-    run_name <- gsub("\\.", "", run_name)
-    renorm[,j+1] <- abs(GMJMCMC:::marginal.probs.renorm(eval(parse(text=run_name))) - base_renorm)
-    print(run_name)
-  }
-  renormalized_estimates[[i]] <- renorm
-}
+renorm_all <- renorm_compare(basename, runs, base_renorm)
+set.seed(1911)
+best_renorms5 <- renorm_best(basename, runs, 5)
+best_renorms10 <- renorm_best(basename, runs, 10)
+best_renorms20 <- renorm_best(basename, runs, 20)
+best_renorms_diff5 <- matrix(unlist(lapply(best_renorms5, function(x) {abs(x - base_renorm)})), nvars, length(subs_list))
+best_renorms_diff10 <- matrix(unlist(lapply(best_renorms10, function(x) {abs(x - base_renorm)})), nvars, length(subs_list))
+best_renorms_diff20 <- matrix(unlist(lapply(best_renorms20, function(x) {abs(x - base_renorm)})), nvars, length(subs_list))
 
-save(renormalized_estimates, file="data/full_enumeration/gaussian/100K/renorm.Rdata")
+renorm_meanquant <- matrix_quantmean(renorm_all)
 
-base_renorm <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
-
-# Get all the renormalized estimates for 10K
-renormalized_estimates <- vector("list", length(runs))
-for (i in 1:length(runs)) {
-  renorm <- matrix(NA, nvars, length(subs_list)+1)
-  renorm[,1] <- 0
-  for (j in 1:length(subs_list)) {
-    run_name <- paste0("run",runs[i], "_full_10Kg",subs_list[j]*100)
-    run_name <- gsub("\\.", "", run_name)
-    renorm[,j+1] <- abs(GMJMCMC:::marginal.probs.renorm(eval(parse(text=run_name))) - base_renorm)
-    print(run_name)
-  }
-  renormalized_estimates[[i]] <- renorm
-}
-
-save(renormalized_estimates, file="data/full_enumeration/gaussian/10K/renorm.Rdata")
-
-meanquant <- matrix_quantmean(renormalized_estimates)
-
-par(mfrow=c(3,5))
+par(mfrow=c(3,5), mar=rep(2.5,4))
 for (i in 1:15) {
-  ci_plot(meanquant, i, ylab="Absolute difference", xlab="Subsample size")
+  ci_plot(renorm_meanquant, i, ylab="Absolute difference", xaxt="n")
+  lines(c(0,best_renorms_diff5[i,]), col="red", lty="dashed")
+  lines(c(0,best_renorms_diff10[i,]), col="blue", lty="dotted")
+  lines(c(0,best_renorms_diff20[i,]), col="darkgreen", lty="dotdash")
+  axis(1, at=1:10, labels=c("Full", subs_list), las=2)
 }
+
+
+save(renorm_all, file="data/full_enumeration/gaussian/",run,"/renorm.Rdata")
+
+
 
 
 GMJMCMC:::marginal.probs.renorm(run1172_full_100Kg20)

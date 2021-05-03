@@ -3,32 +3,45 @@
 # Created by: jonlachmann
 # Created on: 2021-04-29
 
-logistic_full_files <- list.files(path="data/full_enumeration/logistic/")
-for (file in logistic_full_files) load(file=paste0("data/full_enumeration/logistic/",file))
+source("packages.R")
+source("functions.R")
+source("logis_sim_data.R")
 
-# Calculate the renormalized marginal probabilities
-full_1M_renorm <- matrix(NA, nvars, 6)
-full_1M_renorm[,1] <- GMJMCMC:::marginal.probs.renorm(full_1M)
-full_1M_renorm[,2] <- GMJMCMC:::marginal.probs.renorm(full_1M_1)
-full_1M_renorm[,3] <- GMJMCMC:::marginal.probs.renorm(full_1M_05)
-full_1M_renorm[,4] <- GMJMCMC:::marginal.probs.renorm(full_1M_01)
-full_1M_renorm[,5] <- GMJMCMC:::marginal.probs.renorm(full_1M_005) # This one is wrong!!
-full_1M_renorm[,6] <- GMJMCMC:::marginal.probs.renorm(full_1M_001)
+run <- "10K"
+run <- "100K"
 
-barplot(t(full_1M_renorm), beside=T)
-cor(full_1M_renorm)
+## Load files
+logistic_full_files <- list.files(path=paste0("data/full_enumeration/logistic/",run,"/"))
+for (file in logistic_full_files) load(file=paste0("data/full_enumeration/logistic/",run,"/",file))
 
-mattt <- matrix(unlist(run1135_full_100Kl), ncol=18, byrow=T)
+# Set up parameters for analysis
+runs <- sub("...", "",unique(regmatches(ls(), regexpr("run[0-9]*", ls()))))
+runs <- runs[-(runs == "")]
 
-for (i in 1:full_model_count) {
-  run917_full_100Kl[[1]]$crit <- run917_full_100Kl[[1]]$crit + sum(run917_full_100Kl[[1]]$model) + 1
-  run917_full_100Kl[[1]]$crit <- run917_full_100Kl[[1]]$crit -
-    0.5 * (sum(run917_full_100Kl[[1]]$model) + 1) * log(100000)
+subs_list <- c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+basename <- paste0("full_",run,"l")
+
+base_renorm <- GMJMCMC:::marginal.probs.renorm(eval(parse(text=basename)))
+
+renorm_100Kl <- renorm_compare(basename, runs, base_renorm)
+set.seed(1911)
+best_renorms5 <- renorm_best(basename, runs, 5)
+best_renorms10 <- renorm_best(basename, runs, 10)
+best_renorms20 <- renorm_best(basename, runs, 20)
+best_renorms_diff5 <- matrix(unlist(lapply(best_renorms5, function(x) {abs(x - base_renorm)})), nvars, length(subs_list))
+best_renorms_diff10 <- matrix(unlist(lapply(best_renorms10, function(x) {abs(x - base_renorm)})), nvars, length(subs_list))
+best_renorms_diff20 <- matrix(unlist(lapply(best_renorms20, function(x) {abs(x - base_renorm)})), nvars, length(subs_list))
+
+
+
+save(renorm_100Kl, file="data/full_enumeration/logistic/100K/renorm.Rdata")
+
+renorm_meanquant <- matrix_quantmean(renorm_100Kl)
+
+par(mfrow=c(3,5), mar=c(1,1,1,1))
+for (i in 1:15) {
+  ci_plot(renorm_meanquant, i, ylab="Absolute difference", xlab="Subsample size", xlab=c("Full", subs_list))
+  lines(c(0,best_renorms_diff5[i,]), col="red", lty="dashed")
+  lines(c(0,best_renorms_diff10[i,]), col="blue", lty="dashed")
+  lines(c(0,best_renorms_diff20[i,]), col="darkgreen", lty="dashed")
 }
-
-logistic.loglik.aic(million_y_l[1:10000], million_x[1:10000,], c(T,run978_full_10Kl[[1]]$model))
-logistic.loglik.bic(million_y_l[1:10000], million_x[1:10000,], c(T,run978_full_10Kl[[1]]$model))
-
-tes <- run978_full_10Kl[[1]]$crit + sum(run978_full_10Kl[[1]]$model) + 1
-  tes <- tes -
-    0.5 * (sum(run978_full_10Kl[[1]]$model) + 1) * log(10000)

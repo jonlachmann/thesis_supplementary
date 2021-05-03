@@ -23,9 +23,11 @@ data_10K <- cbind(million_y_l, million_x)[1:10000,]
 sim_probs <- gen.probs.list()
 sim_pars <- gen.params.list(data_10K)
 
-#mjmcmc_10K <- mjmcmc(cbind(million_y_l, million_x)[1:10000,], logistic.loglik.aic, 5000, sim_probs, sim_pars)
+mjmcmc_100 <- mjmcmc(cbind(million_y_l, million_x)[1:100,], logistic.loglik.aic, 1000, sim_probs, sim_pars, T)
 #save(mjmcmc_10K, file="data/mjmcmc/mjmcmc_10K")
 load(file="data/mjmcmc_sim/mjmcmc_10K.Rdata")
+
+GMJMCMC:::marginal.probs.renorm(mjmcmc_100$models)
 
 mjmcmc_10K_conv <- vector("list", 20)
 for (i in 1:20) {
