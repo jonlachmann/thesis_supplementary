@@ -2,7 +2,7 @@
 .libPaths("/cluster/home/jola4668/R")
 
 args <- commandArgs(trailingOnly=TRUE)
-print(argss[1])
+print(args[1])
 
 # Load packages, data, likelihood functions and general functions
 source("packages.R")
