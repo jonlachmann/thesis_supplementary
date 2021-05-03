@@ -110,7 +110,7 @@ run_clustersim <- function (x, y, loglik, model_parts, n_obs, subs, name, direct
 run_mjmcmc <- function(loglik, data, probs, pars, subs, iter, runs, base_name) {
   if (subs != 1) name <- paste0(base_name, subs*100)
   name <- gsub("\\.", "", name)
-  pars$loglik$subs <- sub_size
+  pars$loglik$subs <- subs
   sub <- (subs != 1)
 
   mclapply(1:runs, function(x) {
