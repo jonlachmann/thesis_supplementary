@@ -106,6 +106,25 @@ run_clustersim <- function (x, y, loglik, model_parts, n_obs, subs, name, direct
   cat(paste0("\n", name, " simulation done.\n"))
 }
 
+# Function to run multiple MJMCMC runs
+run_mjmcmc <- function(loglik, data, probs, pars, subs, iter, runs, base_name) {
+  if (subs != 1) name <- paste0(base_name, subs*100)
+  name <- gsub("\\.", "", name)
+  pars$loglik$subs <- sub_size
+  sub <- (subs != 1)
+
+  mclapply(1:runs, function(x) {
+    run_name <- paste0(name, "_", x)
+    cat(paste0("\n", "Running ", name, " simulation.\n"))
+    simres <- mjmcmc(data, loglik, iter, probs, pars, sub)
+    assign(run_name, simres)
+    filename <- paste0(directory,"/",run_name,".Rdata")
+    eval(parse(text=paste0("save(",run_name,", file=\"",filename,"\")")))
+    cat(paste0("\n", run_name, " simulation done.\n"))
+  })
+}
+
+
 # Function to align model matrix with the number of cores available
 align_models <- function (models) {
   num_cores <- detectCores()
