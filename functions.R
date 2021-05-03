@@ -121,7 +121,7 @@ run_mjmcmc <- function(loglik, data, probs, pars, subs, iter, runs, base_name) {
     filename <- paste0(directory,"/",run_name,".Rdata")
     eval(parse(text=paste0("save(",run_name,", file=\"",filename,"\")")))
     cat(paste0("\n", run_name, " simulation done.\n"))
-  })
+  }, mc.cores=detectCores(), mc.preschedule = F)
 }
 
 
