@@ -28,3 +28,33 @@ sim_pars$loglik$subs <- 0.0001
 
 system.time(mjmcmc_100 <- mjmcmc(data_100Kl, logistic.loglik.bic.irlssgd, 50, sim_probs, sim_pars, T))
 system.time(mjmcmc_100 <- mjmcmc(data_100Kl, logistic.loglik.bic, 50, sim_probs, sim_pars))
+
+
+load("data/full_enumeration/gaussian/10K/full_10Kg.Rdata")
+load("data/mjmcmc/gaussian/10K/run530_mjmcmc_10Kg5_1.Rdata")
+
+matt <- matrix(NA, 15,3)
+matt[,1] <- marginal.probs.renorm(full_10Kg)
+matt[,2] <- marginal.probs.renorm(run530_mjmcmc_10Kg5_1$models)
+matt[,3] <- GMJMCMC:::marginal.probs(run530_mjmcmc_10Kg5_1$models)
+multiplot(matt, legend=T)
+
+
+model.size <- length(models[[1]]$model)
+models.matrix <- matrix(unlist(models), ncol=model.size+3, byrow=T)
+models.matrix <- rbind(models.matrix, models.matrix)
+models.matrix[21:40,17] <- models.matrix[21:40,17]-10
+
+models.matrix.nondup <- models.matrix[(!duplicated(models.matrix[,2:(model.size+1)], dim=1, fromLast=T)),]
+
+
+marginal.probs.renorm <- function (models) {
+  model.size <- length(models[[1]]$model)
+  models.matrix <- matrix(unlist(models), ncol=model.size+3, byrow=T)
+  models.matrix <- models.matrix[(!duplicated(models.matrix[,2:(model.size+1)], dim=1, fromLast=T)),]
+  max_mlik <- max(models.matrix[,(model.size+2)])
+  crit.sum <- sum(exp(models.matrix[,(model.size+2)]-max_mlik))
+  probs <- matrix(NA,1,model.size)
+  for (i in 2:(model.size+1)) probs[i-1] <- sum(exp(models.matrix[as.logical(models.matrix[,i]),(model.size+2)]-max_mlik))/crit.sum
+  return(probs)
+}
