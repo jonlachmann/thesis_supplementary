@@ -25,5 +25,5 @@ sim_probs <- gen.probs.list()
 sim_pars <- gen.params.list(data_use)
 sim_pars$loglik$g <- 100/sqrt(n_obs/100)
 
-system.time(run_mjmcmc(linear.g.prior.loglik.irlssgd, data_use, sim_probs, sim_pars, sub_size, iter, run_count, basename))
+run_mjmcmc(linear.g.prior.loglik.irlssgd, data_use, sim_probs, sim_pars, sub_size, iter, run_count, basename)
 #system.time(run_mjmcmc(linear.g.prior.loglik, data_use, sim_probs, sim_pars, 1, iter, run_count, basename))
