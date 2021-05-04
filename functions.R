@@ -168,6 +168,29 @@ ci_plot <- function(data, row, ...) {
   lines(data$mean[row,])
 }
 
+# Function for creating a plot for the full enumeration examples
+full_enum_plot <- function (mean_quant, best5, best10, best20, title, subs_list) {
+  par(mfrow=c(5,3), mar=c(5,4.5,1,0), oma=c(4,0,3,0))
+  for (i in 1:15) {
+    ci_plot(mean_quant, i, xlab="", ylab=bquote(paste("Abs. diff. for ", gamma[.(i)])), xaxt="n", bty="n", cex.lab=1.3)
+    lines(c(0,best5[i,]), col="red", lty="dashed")
+    lines(c(0,best10[i,]), col="blue", lty="dotted")
+    lines(c(0,best20[i,]), col="darkgreen", lty="dotdash")
+    axis(1, at=1:10, labels=c("Full", paste0(subs_list*100,"%")), las=2, cex.axis=0.95)
+    title(xlab = "Sample size", mgp = c(3.5, 1, 0), cex.lab=1.3, srt=45)
+  }
+  par(mfrow=c(1, 1), oma=rep(0, 4), mar=c(0,0,3,0), new=TRUE)
+  plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+  title(title)
+  legend("bottom", legend=c("Mean","Best of 5", "Best of 10", "Best of 20", "95% CI of mean"),
+         lty=c("solid", "dashed", "dotted", "dotdash", NA),
+         density=c(0,0,0,0,100),
+         fill=c("black", "red", "blue", "darkgreen", "gray"),
+         col=c("black", "red", "blue", "darkgreen", "gray"),
+         border = c(NA,NA,NA,NA,"gray"),
+         horiz=T, bty="n", text.width=c(0.1,0.1,0.1,0.1,0.13), x.intersp=c(1,1,1,1,-0.5))
+}
+
 # Function for getting the renormalized comparison to the real values
 renorm_compare <- function (basename, runs, true_renorm) {
   renormalized_estimates <- vector("list", length(runs))
