@@ -4,7 +4,27 @@
 # Created on: 2021-04-26
 
 
+kmdata2 <- cbind(1,kmdata[,-1])
+kmdata2[,2] <- troot(kmdata2[,5])
+kmdata2[,2] <- kmdata2[,8] #*kmdata2[,5]*kmdata2[,8]
 
+
+gaussian.loglik2(kmdata[,1], kmdata2, c(T,T,F,F,T,F,F,F,F,F,F), complex=list(width=rep(0,2)), list(r=1/223))
+gaussian.loglik3(kmdata[,1], kmdata2, c(T,T,F,F,F,F,F,F,F,F,F), complex=list(width=rep(0,2)), list(r=1/223))
+
+
+
+gaussian.loglik2 <- function (y, x, model, complex, params) {
+  suppressWarnings({mod <- fastglm(as.matrix(x[,model]), y, family=gaussian())})
+  ret <- (-(mod$deviance -2*log(params$r)*sum(complex$width)))/2
+  return(ret)
+}
+
+gaussian.loglik3 <- function (y, x, model, complex, params) {
+  suppressWarnings({mod <- glm.fit(as.matrix(x[,model]), y)})
+  ret <- (-(mod$deviance -2*log(params$r)*sum(complex$width)))/2
+  return(ret)
+}
 
 
 

@@ -7,6 +7,8 @@
 source("logis_sim_data_old.R")
 # Load common functions
 source("functions.R")
+# Load packaged
+source("packages.R")
 
 ### Demonstrate the convergence of the S-IRLS-SGD algorithm for a logistic model
 
@@ -20,10 +22,10 @@ irlssgd_res_l <- irls.sgd(million_x, million_y_l, binomial(),
             sgd.control=list(subs=0.0005, maxit=500, alpha=0.05, decay=0.99, histfreq=10), T)
 
 # Create a plot showing the convergence of S-IRLS-SGD
-par(mfrow=c(4,4),oma = c(0,0,2,0))
+par(mfrow=c(4,4),oma = c(0,0,2,0), mar=c(4,5.1,2,2.1))
 for (i in 1:16) {
-  multiplot(cbind(c(irlssgd_res_l$irls_hist[,i], irlssgd_res_l$sgd_hist[,i]), true_glm_res$coefficients[i]),
-            frame.plot=F,
+  multiplot(cbind(c(irlssgd_res_l$irls_hist[,i], irlssgd_res_l$sgd_hist[,i]), true_glm_res_l$coefficients[i]),
+            frame.plot=F, cex.lab=1.3,
             ylab=bquote(beta[.(i-1)]), xlab="Iteration")
   abline(v=length(irlssgd_res_l$irls_hist[,i]))
 }

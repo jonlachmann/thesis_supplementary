@@ -3,6 +3,12 @@
 # Created by: jonlachmann
 # Created on: 2021-04-26
 
+#loads an RData file, and returns it
+loadRdata <- function (fileName) {
+    load(fileName)
+    get(ls()[ls() != "fileName"])
+}
+
 # Plot many columns in a matrix, log scale can be enabled too
 multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), legend=F, names=names(mat), ...) {
   if (logscale) {
@@ -15,7 +21,7 @@ multiplot <- function (mat, logscale=F, ylim=c(min(mat), max(mat)), legend=F, na
   if (ncol(mat) > 1) for (i in 2:ncol(mat)) lines(mat[,i], col=rbcol[i])
   if (legend) {
     if (is.null(names)) names <- 1:ncol(mat)
-    legend("bottomright", col=rbcol, legend=names, lty=1)
+    legend("topright", col=rbcol, legend=names, lty=1)
   }
 }
 
@@ -31,20 +37,27 @@ print.progressbar <- function (progress, size=40) {
 }
 
 # Calculate rmse for the first iters iterations when also having the full renormalized probabilities
-rmse <- function (full, sim, iters) {
-  sim_renorm <- GMJMCMC:::marginal.probs.renorm(sim$models[1:iters])
-  names(sim_renorm) <- paste0("y",1:length(sim_renorm))
-  sim_renorm <- sim_renorm[order(full)]
-  full <- sort(full)
-  rmse <- sqrt((sim_renorm - full)^2)
-  return(rmse*100)
+rmse <- function (full, models, renorm=T) {
+  if (renorm) sim_renorm <- GMJMCMC:::marginal.probs.renorm(models)
+  else sim_renorm <- GMJMCMC:::marginal.probs(models)
+  rmse <- sqrt(mean((sim_renorm - full)^2))
+  return(rmse)
 }
 
-rmse_conv <- function (full, sim, steps) {
-  rmse_converge <- matrix(NA, steps, length(full))
-  step_size <- length(sim$models) / steps
+rmse_conv <- function (full, sim, steps, renorm=T, lo=F) {
+  rmse_converge <- matrix(NA, steps, 1)
+  if (lo) {
+    models <- c(sim$models, sim$lo.models)
+    model.size <- length(models[[1]]$model)
+    models.matrix <- matrix(unlist(models), ncol=model.size+3, byrow=T)
+  } else models <- sim$models
+  step_size <- length(models) / steps
+  progress <- 0
   for(i in 1:steps) {
-    rmse_converge[i,] <- rmse(full, sim, i*step_size)
+    models.use <- models[1:(i*step_size)]
+    if (lo) models.use <- models.use[order(models.matrix[1:(i*step_size),(model.size+2)])]
+    rmse_converge[i,] <- rmse(full, models.use, renorm)
+    progress <- print.progressbar(progress, steps)
   }
   return(rmse_converge)
 }
@@ -159,13 +172,29 @@ matrix_quantmean <- function (matlist, quantiles=c(0.05, 0.95)) {
   return(list(mean=mat_mean, low=mat_low, high=mat_high))
 }
 
+# Function for calculating the quantiles and mean of rows in a matrix
+row_quantmean <- function (mat, quantiles=c(0.05, 0.95)) {
+  means <- rowMeans(mat)
+  low <- apply(mat, 1, quantile, quantiles[1])
+  high <- apply(mat, 1, quantile, quantiles[2])
+  return(list(mean=means, low=low, high=high))
+}
+
 # Function for creating a plot with confidence intervals
-ci_plot <- function(data, row, ...) {
-  x_size <- ncol(data$mean)
-  plot(-10, xlim=c(1,x_size), ylim=c(0,max(data$high[row,])), ...)
-  polygon(c(1:x_size, x_size:1), c(data$low[row,], rev(data$high[row,])),
-        col="lightgrey", border=NA)
-  lines(data$mean[row,])
+ci_plot <- function(data, row=F, ...) {
+  if (!row) {
+    x_size <- length(data$mean)
+    plot(-10, xlim=c(1,x_size), ylim=c(0,max(data$high)), ...)
+    polygon(c(1:x_size, x_size:1), c(data$low, rev(data$high)),
+          col="lightgrey", border=NA)
+    lines(data$mean)
+  } else {
+    x_size <- ncol(data$mean)
+    plot(-10, xlim=c(1,x_size), ylim=c(0,max(data$high[row,])), ...)
+    polygon(c(1:x_size, x_size:1), c(data$low[row,], rev(data$high[row,])),
+          col="lightgrey", border=NA)
+    lines(data$mean[row,])
+  }
 }
 
 # Function for creating a plot for the full enumeration examples

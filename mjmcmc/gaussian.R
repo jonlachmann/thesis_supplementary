@@ -11,50 +11,121 @@ source("functions.R")
 
 subs_list <- c(0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
-data_10Kg <- cbind(mill_y_g10K, mill_x_g)[1:10000,]
-data_10Kl <- cbind(mill_y_l10K, mill_x_g)[1:10000,]
+run <- "10K"
+run <- "100K"
+basename <- paste0("mjmcmc_",run,"g")
+run_no <- 786
 
-data_100Kg <- cbind(mill_y_g100K, mill_x_g)[1:100000,]
-data_100Kl <- cbind(mill_y_l100K, mill_x_g)[1:100000,]
+## Load full enumeration with full IRLS for comparison
+load(file="data/full_enumeration/gaussian/10K/full_10Kg.Rdata")
+full_10Kg_renorm <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
 
-data_1Mg <- cbind(mill_y_g1M, mill_x_g)
-data_1Ml <- cbind(mill_y_l1M, mill_x_g)
+## Load files and extract the results
+mcmc_res <- vector("list", length(subs_list))
+renorm_res <- vector("list", length(subs_list))
+for (i in 1:length(subs_list)) {
+  mcmc_res[[i]] <- matrix(NA, 66, 20)
+  renorm_res[[i]] <- matrix(NA, 66, 20)
+}
+lastresult <- rep(0, length(subs_list))
+gaussian_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/gaussian/",run,"/"))
+for (file in gaussian_mjmcmc_files[101:140]) {
+  # Load the file
+  cat("Loading ",file,"...\n")
+  rundata <- loadRdata(paste0("data/mjmcmc/gaussian/",run,"/",file))
+  sub_size <- substring(regmatches(file, regexpr(paste0(run,"g[0-9]*"), file)), 5)
+  sub_size <- sub("(.)", "\\1\\.", sub_size)
+  sub_id <- which(as.numeric(sub_size)/100 == subs_list)
+  lastresult[sub_id] <- lastresult[sub_id] + 1
 
-sim_probs <- gen.probs.list()
-sim_pars <- gen.params.list(data_10Kg)
+  cat("Calculating MCMC estimates...\n")
+  mcmc_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kg_renorm, rundata, 66, F)
+  cat("Calculating renormalized estimates...\n")
+  renorm_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kg_renorm, rundata, 66, T,T)
+}
+multiplot(t(rbind(full_10Kg_renorm, full_10Kg_renorm2)))
+multiplot(cbind(mcmc_res[[1]], renorm_res[[1]]))
+lapply(1:7, function(x) multiplot(cbind(mcmc_res[[x]], renorm_res[[x]])))
 
-sim_probs$large <- 0
-sim_pars$loglik$subs <- 0.0001
+mcmc_qm <- lapply(mcmc_res, row_quantmean)
+renorm_qm <- lapply(renorm_res, row_quantmean)
 
-system.time(mjmcmc_100 <- mjmcmc(data_100Kl, logistic.loglik.bic.irlssgd, 50, sim_probs, sim_pars, T))
-system.time(mjmcmc_100 <- mjmcmc(data_100Kl, logistic.loglik.bic, 50, sim_probs, sim_pars))
+ci_plot(mcmc_qm[[4]])
+
+save(mcmc_res, file="mcmc_res.Rdata")
+save(renorm_res, file="renorm_res.Rdata")
+
+file <- gaussian_mjmcmc_files[102]
+
+which(as.numeric(sub_size)/100 == subs_list)
+
+test <- loadRdata(file=paste0("data/mjmcmc/gaussian/",run,"/",gaussian_mjmcmc_files[1]))
+load(file=paste0("data/mjmcmc/gaussian/",run,"/",gaussian_mjmcmc_files[21]))
+load(file=paste0("data/mjmcmc/gaussian/",run,"/",gaussian_mjmcmc_files[61]))
+load(file=paste0("data/mjmcmc/gaussian/",run,"/",gaussian_mjmcmc_files[81]))
+load(file=paste0("data/mjmcmc/gaussian/",run,"/",gaussian_mjmcmc_files[101]))
+load(file=paste0("data/mjmcmc/gaussian/",run,"/",gaussian_mjmcmc_files[121]))
+
+## Load full enumeration for comparison
+load(file="data/full_enumeration/gaussian/10K/full_10Kg.Rdata")
+full_10Kg_renorm <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
+
+##
+load(file="data/full_enumeration/gaussian/10K/renorm.Rdata")
+
+renorm10Kg05 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg05_1, 66, T, T)
+renorm10Kg075 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg075_1, 66, T, T)
+
+mcmc10Kg5 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg5_1, 66, F)
+renorm10Kg5 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg5_1, 66, T, T)
+mcmc10Kg1 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg1_1, 66, F)
+renorm10Kg1 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg1_1, 66, T, T)
+mcmc10Kg05 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg05_1, 66, F)
+renorm10Kg05 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg05_1, 66, T, T)
+mcmc10Kg075 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg075_1, 66, F)
+renorm10Kg075 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg075_1, 66, T, T)
+mcmc10Kg005 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg005_1, 66, F)
+renorm10Kg005 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg005_1, 66, T, T)
+mcmc10Kg01 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg01_1, 66, F)
+renorm10Kg01 <- rmse_conv(full_10Kg_renorm, run786_mjmcmc_10Kg01_1, 66, T, T)
+renorms <- matrix(NA, 12, 66)
+renorms[1,] <- sqrt(rowMeans((mcmc10Kg5/100)^2))
+renorms[2,] <- sqrt(rowMeans((renorm10Kg5/100)^2))
+renorms[3,] <- sqrt(rowMeans((mcmc10Kg1/100)^2))
+renorms[4,] <- sqrt(rowMeans((renorm10Kg1/100)^2))
+renorms[5,] <- sqrt(rowMeans((mcmc10Kg05/100)^2))
+renorms[6,] <- sqrt(rowMeans((renorm10Kg05/100)^2))
+renorms[7,] <- sqrt(rowMeans((mcmc10Kg01/100)^2))
+renorms[8,] <- sqrt(rowMeans((renorm10Kg01/100)^2))
+names(renorms) <- c("05M", "05R", "075M", "075R")
+
+subs_list <- c(1.0,0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+
+ylims <- c(min(renorms), max(renorms[-c(7,8,12),]))
+par(mfrow=c(1,2))
+multiplot(t(renorms)[,c(1,3,5,9:11)], legend=T, names=c("5M", "1M", "05M", "01M"), ylim=ylims)
+multiplot(t(renorms)[,c(2,4,6,9:11)], legend=T, names=c("5R", "1R", "05R", "01R"), ylim=ylims)
 
 
-load("data/full_enumeration/gaussian/10K/full_10Kg.Rdata")
-load("data/mjmcmc/gaussian/10K/run530_mjmcmc_10Kg5_1.Rdata")
 
-matt <- matrix(NA, 15,3)
-matt[,1] <- marginal.probs.renorm(full_10Kg)
-matt[,2] <- marginal.probs.renorm(run530_mjmcmc_10Kg5_1$models)
-matt[,3] <- GMJMCMC:::marginal.probs(run530_mjmcmc_10Kg5_1$models)
-multiplot(matt, legend=T)
+multiplot(t(renorms)[1:60,c(1,3,5,9:11)], legend=T, names=c("5M", "1M", "05M", "Full"), ylim=ylims)
+multiplot(t(renorms)[1:60,c(2,4,6,9:11)], legend=T, names=c("5R", "1R", "05R", "Full"), ylim=ylims)
 
+plot(rowMeans(mjmcmc_10K_conv), type="l", names=c("05M", "05R", "075M", "075R"))
 
-model.size <- length(models[[1]]$model)
-models.matrix <- matrix(unlist(models), ncol=model.size+3, byrow=T)
-models.matrix <- rbind(models.matrix, models.matrix)
-models.matrix[21:40,17] <- models.matrix[21:40,17]-10
-
-models.matrix.nondup <- models.matrix[(!duplicated(models.matrix[,2:(model.size+1)], dim=1, fromLast=T)),]
+renorms[9,] <- rep(sqrt(mean((renorm_all[[1]][,4])^2)),66)
+renorms[10,] <- rep(sqrt(mean((renorm_all[[1]][,5])^2)),66)
+renorms[11,] <- rep(sqrt(mean((renorm_all[[1]][,7])^2)),66)
+renorms[12,] <- rep(sqrt(mean((renorm_all[[1]][,9])^2)),66)
 
 
-marginal.probs.renorm <- function (models) {
-  model.size <- length(models[[1]]$model)
-  models.matrix <- matrix(unlist(models), ncol=model.size+3, byrow=T)
-  models.matrix <- models.matrix[(!duplicated(models.matrix[,2:(model.size+1)], dim=1, fromLast=T)),]
-  max_mlik <- max(models.matrix[,(model.size+2)])
-  crit.sum <- sum(exp(models.matrix[,(model.size+2)]-max_mlik))
-  probs <- matrix(NA,1,model.size)
-  for (i in 2:(model.size+1)) probs[i-1] <- sum(exp(models.matrix[as.logical(models.matrix[,i]),(model.size+2)]-max_mlik))/crit.sum
-  return(probs)
+
+
+
+
+mjmcmc_10K_conv <- vector("list", 20)
+for (i in 1:20) {
+  if (!is.null(mjmcmc_10K[[i]])) {
+    mjmcmc_10K_conv[[i]] <- rmse_conv(full_10K_renorm, mjmcmc_10K[[i]], 66)
+  }
 }
