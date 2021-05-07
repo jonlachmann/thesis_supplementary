@@ -36,7 +36,7 @@ print.progressbar <- function (progress, size=40) {
   return(progress+1)
 }
 
-# Calculate rmse for the first iters iterations when also having the full renormalized probabilities
+# Calculate rmse when also having the full renormalized probabilities
 rmse <- function (full, models, renorm=T) {
   if (renorm) sim_renorm <- GMJMCMC:::marginal.probs.renorm(models)
   else sim_renorm <- GMJMCMC:::marginal.probs(models)
@@ -181,16 +181,16 @@ row_quantmean <- function (mat, quantiles=c(0.05, 0.95)) {
 }
 
 # Function for creating a plot with confidence intervals
-ci_plot <- function(data, row=F, ...) {
+ci_plot <- function(data, row=F, append=F, ylim=c(0,max(data$high)), density=NA, border=NA, ...) {
   if (!row) {
     x_size <- length(data$mean)
-    plot(-10, xlim=c(1,x_size), ylim=c(0,max(data$high)), ...)
+    if (!append) plot(-10, xlim=c(1,x_size), ylim=ylim)
     polygon(c(1:x_size, x_size:1), c(data$low, rev(data$high)),
-          col="lightgrey", border=NA)
-    lines(data$mean)
+          col="lightgrey", border=border, density=density)
+    lines(data$mean, ...)
   } else {
     x_size <- ncol(data$mean)
-    plot(-10, xlim=c(1,x_size), ylim=c(0,max(data$high[row,])), ...)
+    plot(-10, xlim=c(1,x_size), ylim=ylim, ...)
     polygon(c(1:x_size, x_size:1), c(data$low[row,], rev(data$high[row,])),
           col="lightgrey", border=NA)
     lines(data$mean[row,])

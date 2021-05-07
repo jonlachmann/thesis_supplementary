@@ -5,20 +5,20 @@
 
 # Load packages, data, likelihoods and general functions
 source("packages.R")
-source("gauss_sim_data.R")
+source("logis_sim_data.R")
 source("likelihoods1.R")
 source("functions.R")
-     c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+
 subs_list <- c(0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
 run <- "10K"
 run <- "100K"
-basename <- paste0("mjmcmc_",run,"g")
+basename <- paste0("mjmcmc_",run,"l")
 run_no <- 786
 
 ## Load full enumeration with full IRLS for comparison
-load(file="data/full_enumeration/gaussian/10K/full_10Kg.Rdata")
-full_10Kg_renorm <- GMJMCMC:::marginal.probs.renorm(full_10Kg)
+load(file="data/full_enumeration/logistic/10K/full_10Kl.Rdata")
+full_10Kl_renorm <- GMJMCMC:::marginal.probs.renorm(full_10Kl)
 
 ## Load files and extract the results
 mcmc_res <- vector("list", length(subs_list))
@@ -28,26 +28,27 @@ for (i in 1:length(subs_list)) {
   renorm_res[[i]] <- matrix(NA, 66, 20)
 }
 lastresult <- rep(0, length(subs_list))
-gaussian_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/gaussian/",run,"/"))
-for (file in gaussian_mjmcmc_files[101:140]) {
+logistic_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/logistic/",run,"/"))
+for (file in logistic_mjmcmc_files[1]) {
   # Load the file
   cat("Loading ",file,"...\n")
-  rundata <- loadRdata(paste0("data/mjmcmc/gaussian/",run,"/",file))
-  sub_size <- substring(regmatches(file, regexpr(paste0(run,"g[0-9]*"), file)), 5)
+  rundata <- loadRdata(paste0("data/mjmcmc/logistic/",run,"/",file))
+  sub_size <- substring(regmatches(file, regexpr(paste0(run,"l[0-9]*"), file)), 5)
   sub_size <- sub("(.)", "\\1\\.", sub_size)
   sub_id <- which(as.numeric(sub_size)/100 == subs_list)
   lastresult[sub_id] <- lastresult[sub_id] + 1
 
   cat("Calculating MCMC estimates...\n")
-  mcmc_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kg_renorm, rundata, 66, F)
+  mcmc_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kl_renorm, rundata, 66, F)
   cat("Calculating renormalized estimates...\n")
-  renorm_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kg_renorm, rundata, 66, T,T)
+  renorm_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kl_renorm, rundata, 66, T,T)
 }
-#save(mcmc_res, file="data/mjmcmc/gaussian/10K/mcmc_res.Rdata")
-#save(renorm_res, file="data/mjmcmc/gaussian/10K/renorm_res.Rdata")
-load(file="data/mjmcmc/gaussian/10K/mcmc_res.Rdata")
-load(file="data/mjmcmc/gaussian/10K/renorm_res.Rdata")
-load(file="data/full_enumeration/gaussian/10K/renorm.Rdata")
+#save(mcmc_res, file="data/mjmcmc/logistic/10K/mcmc_res.Rdata")
+#save(renorm_res, file="data/mjmcmc/logistic/10K/renorm_res.Rdata")
+load(file="data/mjmcmc/logistic/10K/mcmc_res.Rdata")
+load(file="data/mjmcmc/logistic/10K/renorm_res.Rdata")
+load(file="data/full_enumeration/logistic/10K/renorm.Rdata")
+
 
 # Calculate the mean renorm for the full enumeration runs
 full_rmse <- lapply(renorm_all, function (x) {
@@ -62,20 +63,26 @@ full_rmse_qm <- matrix_quantmean(full_rmse)
 mcmc_qm <- lapply(mcmc_res, row_quantmean)
 renorm_qm <- lapply(renorm_res, row_quantmean)
 
-i <- 1
-{
-  ymax <- max(mcmc_qm[[i]]$high, renorm_qm[[i]]$high, full_rmse_qm$mean[i+3])
-  ci_plot(mcmc_qm[[i]], density=20, border="lightgray", lty="dotted", ylim=c(0, ymax))
-  ci_plot(renorm_qm[[i]], append=T, border="gray")
-  abline(h=full_rmse_qm$mean[i+3], lty="dashed")
-}
 
 
 
+multiplot(t(rbind(full_10Kl_renorm, full_10Kl_renorm2)))
+multiplot(cbind(mcmc_res[[1]], renorm_res[[1]]))
+lapply(1:7, function(x) multiplot(cbind(mcmc_res[[x]], renorm_res[[x]])))
+
+mcmc_test <- GMJMCMC:::marginal.probs(rundata$models)
+
+models <- c(rundata$models, rundata$lo.models)
+    model.size <- length(models[[1]]$model)
+    models.matrix <- matrix(unlist(models), ncol=model.size+3, byrow=T)
+models.use <- models
+models.use <- models.use[order(models.matrix[,(model.size+2)])]
 
 
+mcmc_test <- GMJMCMC:::marginal.probs(rundata$models[-(1:5000)])
+renorm_test <- GMJMCMC:::marginal.probs.renorm(models.use)
 
-
+cbind(t(full_10Kl_renorm), mcmc_test, t(renorm_test))
 
 
 
@@ -142,3 +149,15 @@ renorms[9,] <- rep(sqrt(mean((renorm_all[[1]][,4])^2)),66)
 renorms[10,] <- rep(sqrt(mean((renorm_all[[1]][,5])^2)),66)
 renorms[11,] <- rep(sqrt(mean((renorm_all[[1]][,7])^2)),66)
 renorms[12,] <- rep(sqrt(mean((renorm_all[[1]][,9])^2)),66)
+
+
+
+
+
+
+mjmcmc_10K_conv <- vector("list", 20)
+for (i in 1:20) {
+  if (!is.null(mjmcmc_10K[[i]])) {
+    mjmcmc_10K_conv[[i]] <- rmse_conv(full_10K_renorm, mjmcmc_10K[[i]], 66)
+  }
+}
