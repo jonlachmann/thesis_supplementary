@@ -7,4 +7,4 @@ while test -f "JOB_FILE"; do
 done
 
 ## Do some work:
-Rscript cluster_runs/$1 > $JOB_FILE 2>&1 &
+Rscript $1 > $JOB_FILE 2>&1 &
