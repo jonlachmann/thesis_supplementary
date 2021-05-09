@@ -38,8 +38,8 @@ km_probs <- gen.probs.list(transforms)
 
 km_probs$filter <- 0.8
 km_pars$loglik$r <- 1/223
-km_pars$feat$pop.max <- 15
-km_pars$feat$keep.org <- F
+km_pars$feat$pop.max <- 20
+km_pars$feat$keep.org <- T
 km_pars$feat$keep.min <- 0.6
 km_pars$feat$D <- 5
 km_probs$gen <- c(0.25, 0.25, 0.25, 0.25)
