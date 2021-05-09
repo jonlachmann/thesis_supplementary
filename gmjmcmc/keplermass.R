@@ -19,9 +19,13 @@ kepler_runs <- vector("list")
 kepler_files <- list.files(path=paste0(kepler_dir))
 for (i in 1:length(kepler_files)) kepler_runs[[i]] <- loadRdata(file=paste0(kepler_dir,kepler_files[i]))
 
+bestmargs <- matrix(NA, 40, 64)
+for(i in 1:64) bestmargs[,i] <- unlist(kepler_runs[[i]]$best.margs)
 
+multiplot(rowMeans(bestmargs))
+multiplot((bestmargs))
 
-kepler200b <- merge.results(kepler_runs, "all", 2)
+kepler200b <- merge.results(kepler_runs, "best", 2)
 
 plot(kepler200b, 20)
 
