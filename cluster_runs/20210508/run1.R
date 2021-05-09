@@ -29,7 +29,7 @@ transforms <- c("sigmoid","sini","tanh","atan","troot")
 
 set.seed(as.numeric(dirname)+Sys.time())
 basename <- paste0("run",dirname, "_gmjmcmc_kepler")
-run_count <- 64
+run_count <- 6400
 subs <- 1
 
 

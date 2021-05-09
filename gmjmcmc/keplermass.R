@@ -25,7 +25,7 @@ for(i in 1:64) bestmargs[,i] <- unlist(kepler_runs[[i]]$best.margs)
 multiplot(rowMeans(bestmargs))
 multiplot((bestmargs))
 
-kepler200b <- merge.results(kepler_runs, "best", 2)
+kepler200b <- merge.results(kepler_runs, "best", 2, 0.0001)
 
 plot(kepler200b, 20)
 
