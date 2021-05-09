@@ -62,7 +62,7 @@ full_rmse_qm <- matrix_quantmean(full_rmse)
 mcmc_qm <- lapply(mcmc_res, row_quantmean)
 renorm_qm <- lapply(renorm_res, row_quantmean)
 
-i <- 1
+i <- 3
 {
   ymax <- max(mcmc_qm[[i]]$high, renorm_qm[[i]]$high, full_rmse_qm$mean[i+3])
   ci_plot(mcmc_qm[[i]], density=20, border="lightgray", lty="dotted", ylim=c(0, ymax))

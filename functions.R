@@ -137,6 +137,23 @@ run_mjmcmc <- function(loglik, data, probs, pars, subs, iter, runs, base_name) {
   }, mc.cores=detectCores(), mc.preschedule = F)
 }
 
+# Function to run multiple GMJMCMC runs
+run_gmjmcmc <- function(runs, base_name, subs, ...) {
+  if (subs != 1) name <- paste0(base_name, subs*100)
+  else name <- base_name
+  name <- gsub("\\.", "", name)
+
+  mclapply(1:runs, function(x) {
+    run_name <- paste0(name, "_", x)
+    cat(paste0("\n", "Running ", name, " simulation.\n"))
+    simres <- gmjmcmc(...)
+    assign(run_name, simres)
+    filename <- paste0(dirname,"/",run_name,".Rdata")
+    eval(parse(text=paste0("save(",run_name,", file=\"",filename,"\")")))
+    cat(paste0("\n", run_name, " simulation done.\n"))
+  }, mc.cores=detectCores(), mc.preschedule = F)
+}
+
 
 # Function to align model matrix with the number of cores available
 align_models <- function (models) {
