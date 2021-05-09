@@ -21,7 +21,7 @@ for (i in 1:length(kepler_files)) kepler_runs[[i]] <- loadRdata(file=paste0(kepl
 
 
 
-kepler200b <- merge.results(kepler_runs, "best", 2)
+kepler200b <- merge.results(kepler_runs, "all", 2)
 
 plot(kepler200b, 20)
 
