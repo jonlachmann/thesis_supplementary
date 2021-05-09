@@ -19,9 +19,11 @@ kepler_runs <- vector("list")
 kepler_files <- list.files(path=paste0(kepler_dir))
 for (i in 1:length(kepler_files)) kepler_runs[[i]] <- loadRdata(file=paste0(kepler_dir,kepler_files[i]))
 
+
+
 kepler200b <- merge.results(kepler_runs, "best", 2)
 
-plot(kepler200, 20)
+plot(kepler200b, 20)
 
 
 resmat <- matrix(NA,100,1)
