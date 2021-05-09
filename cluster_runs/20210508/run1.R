@@ -42,11 +42,11 @@ km_pars$feat$pop.max <- 20
 km_pars$feat$keep.org <- T
 km_pars$feat$keep.min <- 0.6
 km_pars$feat$D <- 5
-km_probs$gen <- c(0.25, 0.25, 0.25, 0.25)
+km_probs$gen <- c(10, 5, 1, 1)
 km_pars$rescale.large <- T
 
 num_cores <- detectCores()
 
 print(paste0("Running ",basename,"run!"))
 run_gmjmcmc(run_count, basename, subs,
-           kmdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 40, 400, 2000, km_probs, km_pars, F)
+           kmdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 40, 250, 2000, km_probs, km_pars, F)
