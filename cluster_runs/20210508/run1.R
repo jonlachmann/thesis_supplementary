@@ -29,7 +29,7 @@ transforms <- c("sigmoid","sini","tanh","atan","troot")
 
 set.seed(as.numeric(dirname)+Sys.time())
 basename <- paste0("run",dirname, "_gmjmcmc_kepler")
-run_count <- 50
+run_count <- 200
 subs <- 1
 
 
@@ -43,6 +43,7 @@ km_pars$feat$keep.org <- T
 km_pars$feat$keep.min <- 0.7
 km_pars$feat$D <- 8
 km_probs$gen <- c(0.45, 0.45, 0.05, 0.05)
+km_pars$rescale.large <- T
 
 num_cores <- detectCores()
 
