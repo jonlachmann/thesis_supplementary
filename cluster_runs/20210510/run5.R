@@ -26,15 +26,16 @@ blr_probs <- gen.probs.list(transforms)
 
 blr_probs$filter <- 0.8
 blr_pars$loglik$r <- 1/nrow(blrdata)
-blr_pars$feat$pop.max <- 70
+blr_pars$feat$pop.max <- 32
+blr_pars$feat$prel.filter <- 0.2
 blr_pars$feat$keep.org <- T
 blr_pars$feat$keep.min <- 0.9
 blr_pars$feat$D <- 5
-blr_probs$gen <- c(10, 0, 0, 0)
+blr_probs$gen <- c(10, 5, 1, 1)
 blr_pars$rescale.large <- T
 
 num_cores <- detectCores()
 
 print(paste0("Running ",basename,"run!"))
 run_gmjmcmc(run_count, basename, subs,
-            blrdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 40, 500, 2000, blr_probs, blr_pars, F)
+            blrdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 60, 250, 2000, blr_probs, blr_pars, F)

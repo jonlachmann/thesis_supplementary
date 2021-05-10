@@ -31,7 +31,7 @@ for (i in 1:length(subs_list)) {
 }
 lastresult <- rep(0, length(subs_list))
 gaussian_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/gaussian/",run,"/"))
-for (file in gaussian_mjmcmc_files[81:120]) {
+for (file in gaussian_mjmcmc_files[123:162]) {
   # Load the file
   cat("Loading ",file,"...\n")
   rundata <- loadRdata(paste0("data/mjmcmc/gaussian/",run,"/",file))
@@ -49,9 +49,9 @@ for (file in gaussian_mjmcmc_files[81:120]) {
 }
 #save(mcmc_res, file="data/mjmcmc/gaussian/100K/mcmc_res.Rdata")
 #save(renorm_res, file="data/mjmcmc/gaussian/100K/renorm_res.Rdata")
-load(file="data/mjmcmc/gaussian/10K/mcmc_res.Rdata")
-load(file="data/mjmcmc/gaussian/10K/renorm_res.Rdata")
-load(file="data/full_enumeration/gaussian/10K/renorm.Rdata")
+load(file=paste0("data/mjmcmc/gaussian/",run,"/mcmc_res.Rdata"))
+load(file=paste0("data/mjmcmc/gaussian/",run,"/renorm_res.Rdata"))
+load(file=paste0("data/full_enumeration/gaussian/",run,"/renorm.Rdata"))
 
 
 # Calculate the mean renorm for the full enumeration runs
