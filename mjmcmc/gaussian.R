@@ -8,7 +8,7 @@ source("packages.R")
 source("gauss_sim_data.R")
 source("likelihoods1.R")
 source("functions.R")
-     c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+#    c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 subs_list <- c(0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
 run <- "10K"
@@ -63,12 +63,26 @@ mcmc_qm <- lapply(mcmc_res, row_quantmean)
 renorm_qm <- lapply(renorm_res, row_quantmean)
 
 i <- 3
+
+par(mfrow=c(2,3), mar=c(5,4.5,1,0), oma=c(5,0,7,1))
+for (i in 1:6)
 {
   ymax <- max(mcmc_qm[[i]]$high, renorm_qm[[i]]$high, full_rmse_qm$mean[i+3])
-  ci_plot(mcmc_qm[[i]], density=20, border="lightgray", lty="dotted", ylim=c(0, ymax))
-  ci_plot(renorm_qm[[i]], append=T, border="gray")
+  ci_plot(mcmc_qm[[i]], density=30, angle=45, border="lightgray", lty="dotted", ylim=c(0, 0.43), main=paste0("S-IRLS-SGD with ",subs_list[i]*100,"% per iteration"), ylab="RMSE", xlab="MJMCMC Iterations x1000")
+  ci_plot(renorm_qm[[i]], density=15, append=T, angle=-45, border="gray")
   abline(h=full_rmse_qm$mean[i+3], lty="dashed")
 }
+par(mfrow=c(1, 1), oma=rep(0, 4), mar=c(1,0,3,0), new=TRUE)
+  plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+  title("RMSE of marginal posterior using MJMCMC with S-IRLS-SGD,\nGaussian data with 10,000 observations")
+  legend("bottom", legend=c("Full enumeration","MJMCMC RM", "MJMCMC MC"),
+         lty=c("dashed", "solid", "dotted"),
+         density=c(0,15,30,0),
+         angle=c(0,-45,45),
+         fill=c("black", "lightgray", "lightgray"),
+         col=c("black", "black", "black"),
+         border = c(NA,"lightgray","gray"),
+         horiz=T, bty="n", text.width=c(0.2,0.2,0.2), x.intersp=c(1,1,1))
 
 
 

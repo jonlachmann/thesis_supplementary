@@ -122,6 +122,7 @@ run_clustersim <- function (x, y, loglik, model_parts, n_obs, subs, name, direct
 # Function to run multiple MJMCMC runs
 run_mjmcmc <- function(loglik, data, probs, pars, subs, iter, runs, base_name) {
   if (subs != 1) name <- paste0(base_name, subs*100)
+  else name <- paste0(base_name, "full")
   name <- gsub("\\.", "", name)
   pars$loglik$subs <- subs
   sub <- (subs != 1)
@@ -198,13 +199,13 @@ row_quantmean <- function (mat, quantiles=c(0.05, 0.95)) {
 }
 
 # Function for creating a plot with confidence intervals
-ci_plot <- function(data, row=F, append=F, ylim=c(0,max(data$high)), density=NA, border=NA, ...) {
+ci_plot <- function(data, row=F, append=F, main="", xlab="", ylab="", ylim=c(0,max(data$high)), lty="solid", col="lightgrey", ...) {
   if (!row) {
     x_size <- length(data$mean)
-    if (!append) plot(-10, xlim=c(1,x_size), ylim=ylim)
+    if (!append) plot(-10, xlim=c(1,x_size), ylim=ylim, main=main, ylab=ylab, xlab=xlab, bty="n")
     polygon(c(1:x_size, x_size:1), c(data$low, rev(data$high)),
-          col="lightgrey", border=border, density=density)
-    lines(data$mean, ...)
+          col=col, ...)
+    lines(data$mean, lty=lty)
   } else {
     x_size <- ncol(data$mean)
     plot(-10, xlim=c(1,x_size), ylim=ylim, ...)
