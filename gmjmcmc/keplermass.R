@@ -13,21 +13,65 @@ kmdata <- cbind(kmdata[,5], kmdata[,-5])
 transforms <- c("sigmoid","sini","tanh","atan","troot")
 set.transforms(transforms)
 
+truth <- matrix(NA,223,3)
+truth[,1] <- troot(kmdata[,5]*kmdata[,5]*kmdata[,7])
+truth[,2] <- troot(kmdata[,5]*kmdata[,5]*kmdata[,8])
+truth[,3] <- troot(kmdata[,5]*kmdata[,5]*kmdata[,10])
+cor(truth)
+
 # Load results from disk
 kepler_dir <- "data/gmjmcmc/kepler/"
 kepler_runs <- vector("list")
 kepler_files <- list.files(path=paste0(kepler_dir))
-for (i in 1:length(kepler_files)) kepler_runs[[i]] <- loadRdata(file=paste0(kepler_dir,kepler_files[i]))
+for (i in 1:64) kepler_runs[[i]] <- loadRdata(file=paste0(kepler_dir,kepler_files[i]))
+
+size <- 32
+pos <- 0
+neg <- 0
+for (i in 1:100) {
+  print(i)
+  kepler_runs <- vector("list")
+  # Load data
+  for (j in 1:size) {
+    # print(kepler_files[size*(i-1)+j])
+    kepler_runs[[j]] <- loadRdata(file=paste0(kepler_dir,kepler_files[size*(i-1)+j]))
+  }
+  keplermerge <- merge.results(kepler_runs, "best", 2, 0.00001)
+  detected <- lapply(keplermerge, function(x) x[keplermerge$marg.probs > 0.25])
+  attr(detected, "class") <- "gmjmcmcresult"
+  plot(detected)
+  test <- GMJMCMC:::precalc.features(cbind(kmdata[,1],1,kmdata[,-1]), detected$features)[,-(1:2), drop=F]
+  positive <- 0
+  negative <- 0
+  for (k in 1:ncol(test)) {
+    detected.pos <- sum(cor(cbind(test[,k], truth))[1,-1] > (1-0.000001))
+    if (detected.pos > 0) positive <- positive + 1
+    else negative <- negative + 1
+    print(detected.pos)
+  }
+  if (positive > 0) {
+    print("positive found")
+    pos <- pos + 1
+  }
+  if (negative > 0) {
+    neg <- neg + negative
+    print("negative found")
+  }
+}
+# 16 threads: 127 neg, 56 pos
+# 24 threads: 78 neg, 75 pos
+# 32 threads:  neg,  pos
+
+
+
+plot(detected)
+plot(keplermerge)
 
 bestmargs <- matrix(NA, 40, 64)
 for(i in 1:64) bestmargs[,i] <- unlist(kepler_runs[[i]]$best.margs)
 
 multiplot(rowMeans(bestmargs))
 multiplot((bestmargs))
-
-kepler200b <- merge.results(kepler_runs, "best", 2, 0.0001)
-
-plot(kepler200b, 20)
 
 
 resmat <- matrix(NA,100,1)

@@ -238,6 +238,33 @@ full_enum_plot <- function (mean_quant, best5, best10, best20, title, subs_list)
          horiz=T, bty="n", text.width=c(0.1,0.1,0.1,0.1,0.13), x.intersp=c(1,1,1,1,-0.5))
 }
 
+# Function for mjmcmc plots
+mjmcmc_plot <- function (mcmc, renorm, full, ymax=0.43, main="RMSE of marginal posterior using MJMCMC with S-IRLS-SGD,\nGaussian data with 10,000 observations") {
+  par(mfrow=c(2,3), mar=c(5,4.5,1,0), oma=c(5,0,7,1))
+  i <- 1
+  ci_plot(mcmc[[i]], density=30, angle=45, border="lightgray", lty="dotted", ylim=c(0, ymax), main=paste0("Regular IRLS"), ylab="RMSE", xlab="MJMCMC Iterations x1000")
+  ci_plot(renorm[[i]], density=15, append=T, angle=-45, border="gray")
+  abline(h=0, lty="dashed")
+
+  for (i in 2:6)
+  {
+    ci_plot(mcmc[[i]], density=30, angle=45, border="lightgray", lty="dotted", ylim=c(0, ymax), main=paste0("S-IRLS-SGD with ",as.numeric(subs_list[i])*100,"% per iteration"), ylab="RMSE", xlab="MJMCMC Iterations x1000")
+    ci_plot(renorm[[i]], density=15, append=T, angle=-45, border="gray")
+    abline(h=full$mean[i+2], lty="dashed")
+  }
+  par(mfrow=c(1, 1), oma=rep(0, 4), mar=c(1,0,3,0), new=TRUE)
+    plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+    title(main)
+    legend("bottom", legend=c("Full enumeration","MJMCMC RM", "MJMCMC MC"),
+           lty=c("dashed", "solid", "dotted"),
+           density=c(0,15,30,0),
+           angle=c(0,-45,45),
+           fill=c("black", "lightgray", "lightgray"),
+           col=c("black", "black", "black"),
+           border = c(NA,"lightgray","gray"),
+           horiz=T, bty="n", text.width=c(0.2,0.2,0.2), x.intersp=c(1,1,1))
+}
+
 # Function for getting the renormalized comparison to the real values
 renorm_compare <- function (basename, runs, true_renorm) {
   renormalized_estimates <- vector("list", length(runs))
