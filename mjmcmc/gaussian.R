@@ -9,7 +9,7 @@ source("gauss_sim_data.R")
 source("likelihoods1.R")
 source("functions.R")
 #    c(0.2,0.1,0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
-subs_list <- c(0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+subs_list <- c("",0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
 run <- "10K"
 run <- "100K"
@@ -29,13 +29,14 @@ for (i in 1:length(subs_list)) {
 }
 lastresult <- rep(0, length(subs_list))
 gaussian_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/gaussian/",run,"/"))
-for (file in gaussian_mjmcmc_files[101:140]) {
+for (file in gaussian_mjmcmc_files[4:22]) {
   # Load the file
   cat("Loading ",file,"...\n")
   rundata <- loadRdata(paste0("data/mjmcmc/gaussian/",run,"/",file))
   sub_size <- substring(regmatches(file, regexpr(paste0(run,"g[0-9]*"), file)), 5)
   sub_size <- sub("(.)", "\\1\\.", sub_size)
   sub_id <- which(as.numeric(sub_size)/100 == subs_list)
+  if (length(sub_id) == 0) sub_id <- 1
   lastresult[sub_id] <- lastresult[sub_id] + 1
 
   cat("Calculating MCMC estimates...\n")
@@ -48,6 +49,10 @@ for (file in gaussian_mjmcmc_files[101:140]) {
 load(file="data/mjmcmc/gaussian/10K/mcmc_res.Rdata")
 load(file="data/mjmcmc/gaussian/10K/renorm_res.Rdata")
 load(file="data/full_enumeration/gaussian/10K/renorm.Rdata")
+
+mcmc_res[[1]] <-
+mcmc_res <- c(NA, mcmc_res)
+renorm_res[[1]] <- matrix(NA, 66, 20)
 
 # Calculate the mean renorm for the full enumeration runs
 full_rmse <- lapply(renorm_all, function (x) {

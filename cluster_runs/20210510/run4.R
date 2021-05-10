@@ -22,7 +22,7 @@ n_obs <- 10000
 dirname <- create_randdir()
 set.seed(as.numeric(dirname)+Sys.time())
 basename <- paste0("run",dirname, "_mjmcmc_10Kl")
-run_count <- 2
+run_count <- 18
 iter <- 32768
 
 data_use <- cbind(mill_y_l10K, mill_x_g)[1:n_obs,]
