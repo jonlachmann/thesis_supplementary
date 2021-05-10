@@ -14,12 +14,12 @@
 #
 
 ## Set up job environment:
-#set -o errexit  # Exit the script on any error
-#set -o nounset  # Treat any unset variables as an error
+set -o errexit  # Exit the script on any error
+set -o nounset  # Treat any unset variables as an error
 
-#module --quiet purge  # Reset the modules to the system default
-#module load R/4.0.3-foss-2020b
-#module list
+module --quiet purge  # Reset the modules to the system default
+module load R/4.0.3-foss-2020b
+module list
 
 ## Do some work:
 Rscript cluster_runs/20210510/run3.R
