@@ -3,9 +3,19 @@
 # Created by: jonlachmann
 # Created on: 2021-05-10
 
+.libPaths("/cluster/home/jola4668/R")
+
 source("packages.R")
 source("blr/sim_blr.R")
 source("functions.R")
+library(GMJMCMC)
+
+dirname <- create_randdir()
+
+set.seed(as.numeric(dirname)+Sys.time())
+basename <- paste0("run",dirname, "_gmjmcmc_blr")
+run_count <- 40
+subs <- 1
 
 transforms <- c("sigmoid","sini","tanh","atan","troot")
 
@@ -23,12 +33,8 @@ blr_pars$feat$D <- 5
 blr_probs$gen <- c(10, 0, 0, 0)
 blr_pars$rescale.large <- T
 
-blrres2 <- gmjmcmc(blrdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 40, 500, 2000, blr_probs, blr_pars, F)
+num_cores <- detectCores()
 
-plot(blrres2, 20)
-
-multiplot(unlist(blrres2$best.margs))
-
-mergeres <- merge.results(list(blrres), "all")
-
-plot(mergeres, 10)
+print(paste0("Running ",basename,"run!"))
+run_gmjmcmc(run_count, basename, subs,
+            blrdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 40, 500, 2000, blr_probs, blr_pars, F)

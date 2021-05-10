@@ -25,7 +25,7 @@ kepler_runs <- vector("list")
 kepler_files <- list.files(path=paste0(kepler_dir))
 for (i in 1:64) kepler_runs[[i]] <- loadRdata(file=paste0(kepler_dir,kepler_files[i]))
 
-size <- 32
+size <- 1
 pos <- 0
 neg <- 0
 for (i in 1:100) {
@@ -58,9 +58,15 @@ for (i in 1:100) {
     print("negative found")
   }
 }
+# 1   thread: 204 neg, 6  pos
+# 8  threads: 142 neg, 36 pos
 # 16 threads: 127 neg, 56 pos
-# 24 threads: 78 neg, 75 pos
-# 32 threads:  neg,  pos
+# 24 threads:  78 neg, 75 pos
+# 32 threads:  67 neg, 80 pos
+# 40 threads:  56 neg, 85 pos
+# 48 threads:  42 neg, 86 pos
+# 56 threads:  40 neg, 88 pos
+# 64 threads:  20 neg, 95 pos
 
 
 
