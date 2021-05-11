@@ -8,6 +8,7 @@
 n_obs <- 100000
 
 source("packages.R")
+source("likelihoods1.R")
 source("blr/sim_blr.R")
 source("functions.R")
 library(GMJMCMC)
