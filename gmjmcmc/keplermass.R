@@ -71,6 +71,10 @@ rowSums(rates)
 rateslist <- rateslist[-which(sapply(rateslist, is.null))]
 save(rateslist, file="data/gmjmcmc/kepler/rateslist.Rdata")
 rateslist2 <- lapply(rateslist, rowMeans)
+ratesmat <- matrix(unlist(rateslist2), 3)
+
+total <- ratesmat[2,]+ratesmat[3,]
+fdr <- ratesmat[3,] / total
 
 # 1   thread: 204 neg, 6  pos
 # 8  threads: 142 neg, 36 pos

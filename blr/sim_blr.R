@@ -5,7 +5,7 @@
 
 set.seed(1911)
 
-n_obs <- 100000
+n_obs <- 1000
 
 # Decrease effects with sqrt of sample size increase factor
 blr_betas <- c(7, 7, 9, 7, 3.5, 6.6, 1.5, 1.5) / sqrt(n_obs/1000)
