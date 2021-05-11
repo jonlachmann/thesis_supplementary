@@ -68,6 +68,9 @@ for (j in 1:length(sizes)) {
 }
 
 rowSums(rates)
+rateslist <- rateslist[-which(sapply(rateslist, is.null))]
+save(rateslist, file="data/gmjmcmc/kepler/rateslist.Rdata")
+rateslist2 <- lapply(rateslist, rowMeans)
 
 # 1   thread: 204 neg, 6  pos
 # 8  threads: 142 neg, 36 pos

@@ -32,3 +32,11 @@ multiplot(unlist(blrres2$best.margs))
 mergeres <- merge.results(list(blrres), "all")
 
 plot(mergeres, 10)
+
+blr_dir <- "data/blr/test/"
+blr_runs <- vector("list")
+blr_files <- list.files(path=paste0(blr_dir))
+for (i in 1:40) blr_runs[[i]] <- loadRdata(file=paste0(blr_dir,blr_files[i]))
+
+mergeres_blr <- merge.results(blr_runs, "best", 2, 0.0001)
+plot(mergeres_blr, 15)

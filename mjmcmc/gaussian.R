@@ -74,13 +74,13 @@ renorm_qm33 <- vector("list")
 renorm_qm33[[1]] <- lapply(renorm_qm[[1]], function(x) x[seq(1,66,2)])
 for (i in 2:8) renorm_qm33[[i]] <- lapply(renorm_qm[[i]], function(x) x[seq(1:33)])
 
-#save(mcmc_qm33, file="data/mjmcmc/gaussian/10K/mcmc_qm33.Rdata")
-#save(renorm_qm33, file="data/mjmcmc/gaussian/10K/renorm_qm33.Rdata")
+#save(mcmc_qm33, file="data/mjmcmc/gaussian/100K/mcmc_qm33.Rdata")
+#save(renorm_qm33, file="data/mjmcmc/gaussian/100K/renorm_qm33.Rdata")
 
 mjmcmc_plot(mcmc_qm33,
             renorm_qm33,
             full_rmse_qm,
             ymax=0.43,
-            main="RMSE of marginal posterior using MJMCMC with S-IRLS-SGD,\nGaussian data with 10,000 observations")
+            main="RMSE of marginal posterior using MJMCMC with S-IRLS-SGD,\nGaussian data with 100,000 observations")
 # Saved as 1000x800 @ 110DPI
 

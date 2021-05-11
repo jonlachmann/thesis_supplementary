@@ -14,7 +14,7 @@ dirname <- create_randdir()
 
 set.seed(as.numeric(dirname)+Sys.time())
 basename <- paste0("run",dirname, "_gmjmcmc_blr")
-run_count <- 40
+run_count <- 64
 subs <- 1
 
 transforms <- c("sigmoid","sini","tanh","atan","troot")

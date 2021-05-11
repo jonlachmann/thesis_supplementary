@@ -9,7 +9,7 @@ source("logis_sim_data.R")
 source("likelihoods1.R")
 source("functions.R")
 
-subs_list <- c(0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
+subs_list <- c("",0.05,0.01,0.0075,0.005,0.0025,0.001,0.0005)
 
 run <- "10K"
 run <- "100K"
