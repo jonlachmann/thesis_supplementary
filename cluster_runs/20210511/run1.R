@@ -29,6 +29,7 @@ blr_probs <- gen.probs.list(transforms)
 
 blr_probs$filter <- 0.8
 blr_pars$loglik$r <- 1/nrow(blrdata)
+blr_pars$loglik$subs <- subs
 blr_pars$feat$pop.max <- 32
 blr_pars$feat$prel.filter <- 0.2
 blr_pars$feat$keep.org <- T
