@@ -30,7 +30,7 @@ for (i in 1:length(subs_list)) {
 }
 lastresult <- rep(0, length(subs_list))
 logistic_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/logistic/",run,"/"))
-for (file in logistic_mjmcmc_files[61:120]) {
+for (file in logistic_mjmcmc_files[1:120]) {
   # Load the file
   cat("Loading ",file,"...\n")
   rundata <- loadRdata(paste0("data/mjmcmc/logistic/",run,"/",file))
@@ -42,9 +42,9 @@ for (file in logistic_mjmcmc_files[61:120]) {
   lastresult[sub_id] <- lastresult[sub_id] + 1
 
   cat("Calculating MCMC estimates...\n")
-  mcmc_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kl_renorm, rundata, 66, F)
+  mcmc_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_100Kl_renorm, rundata, 66, F)
   cat("Calculating renormalized estimates...\n")
-  renorm_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_10Kl_renorm, rundata, 66, T,T)
+  renorm_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_100Kl_renorm, rundata, 66, T,T)
 }
 #save(mcmc_res, file="data/mjmcmc/logistic/10K/mcmc_res.Rdata")
 #save(renorm_res, file="data/mjmcmc/logistic/10K/renorm_res.Rdata")
