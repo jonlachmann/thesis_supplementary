@@ -69,17 +69,19 @@ renorm_qm <- row_quantmean(renorm_res[,])
 
 mcmc_qm2 <- row_quantmean(mcmc_res2[,])
 renorm_qm2 <- row_quantmean(renorm_res2[,])
+dev.off()
 dev.new()
 par(mfrow=c(2,3), mar=c(5,4.5,1,0), oma=c(5,0,7,1))
-ci_plot(mcmc_qm, density=30, angle=45, border="lightgray", lty="dotted", main="RMSE of marginal posterior using MJMCMC,\nUS Crime data")
+ci_plot(mcmc_qm, density=30, angle=45, border="lightgray", lty="dotted", main="RMSE of marginal posterior using MJMCMC,\nUS Crime data", ylab="RMSE", xlab="MJMCMC Iterations x100")
 ci_plot(renorm_qm, density=15, append=T, angle=-45, border="gray")
 par(mfrow=c(1, 1), oma=rep(0, 4), mar=c(0,0,0,0), new=TRUE)
-legend("bottom", legend=c("MJMCMC RM", "MJMCMC MC"),
+legend("topright", legend=c("MJMCMC RM", "MJMCMC MC"),
            lty=c("solid", "dotted"),
            density=c(15,30,0),
            angle=c(0,-45,45),
            fill=c("lightgray", "lightgray"),
-           col=c("black", "black"),
+           col=c("black", "black"), bty="n")
+  ,
            border = c("lightgray","gray"),
            horiz=T, bty="n", text.width=c(0.4,0.4), x.intersp=c(1,1))
 
