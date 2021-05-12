@@ -4,10 +4,10 @@
 #SBATCH --job-name=gmjmcmc_blr
 #
 # Project:
-#SBATCH --account=NN9862K
+#SBATCH --account=NN9244K
 #
 # Wall time limit:
-#SBATCH --time=01-12:00:00
+#SBATCH --time=02-00:00:00
 #SBATCH --mem-per-cpu=3G
 #SBATCH --ntasks=40
 #SBATCH --nodes=1

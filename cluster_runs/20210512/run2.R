@@ -16,7 +16,7 @@ dirname <- create_randdir()
 
 set.seed(as.numeric(dirname)+Sys.time())
 basename <- paste0("run",dirname, "_gmjmcmc_blr")
-run_count <- 20
+run_count <- 640
 subs <- 1
 
 transforms <- c("sigmoid","sini","tanh","atan","troot")
@@ -41,4 +41,4 @@ num_cores <- detectCores()
 
 print(paste0("Running ",basename,"run!"))
 run_gmjmcmc(run_count, basename, subs,
-            blrdata, gaussian.loglik.aic, gaussian.loglik.alpha, transforms, 60, 500, 2000, blr_probs, blr_pars, F)
+            blrdata, gaussian.loglik, gaussian.loglik.alpha, transforms, 60, 500, 2000, blr_probs, blr_pars, F)

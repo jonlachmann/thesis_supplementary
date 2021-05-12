@@ -3,7 +3,7 @@
 # Created by: jonlachmann
 # Created on: 2021-05-10
 
-.libPaths("/cluster/home/jola4668/R")
+.libPaths("/cluster/home/aliaksah/R")
 
 n_obs <- 100000
 
@@ -41,4 +41,4 @@ num_cores <- detectCores()
 
 print(paste0("Running ",basename,"run!"))
 run_gmjmcmc(run_count, basename, subs,
-            blrdata, gaussian.loglik.aic.irlssgd, gaussian.loglik.alpha, transforms, 60, 500, 2000, blr_probs, blr_pars, T)
+            blrdata, gaussian.loglik.bic.irlssgd, gaussian.loglik.alpha, transforms, 60, 500, 2000, blr_probs, blr_pars, T)
