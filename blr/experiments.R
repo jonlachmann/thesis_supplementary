@@ -8,6 +8,7 @@ source("blr/sim_blr.R")
 source("functions.R")
 
 transforms <- c("sigmoid","sini","tanh","atan","troot")
+set.transforms(transforms)
 
 blrdata <- cbind(blr_y, blr_x)
 
@@ -33,10 +34,11 @@ mergeres <- merge.results(list(blrres), "all")
 
 plot(mergeres, 10)
 
-blr_dir <- "data/blr/test/"
+blr_dir <- "data/blr/results/"
 blr_runs <- vector("list")
 blr_files <- list.files(path=paste0(blr_dir))
 for (i in 1:40) blr_runs[[i]] <- loadRdata(file=paste0(blr_dir,blr_files[i]))
 
 mergeres_blr <- merge.results(blr_runs, "best", 2, 0.0001)
-plot(mergeres_blr, 15)
+par(mfrow=c(1,1))
+plot(mergeres_blr, 30)

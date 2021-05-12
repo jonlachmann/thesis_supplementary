@@ -42,4 +42,4 @@ num_cores <- detectCores()
 
 print(paste0("Running ",basename,"run!"))
 run_gmjmcmc(run_count, basename, subs,
-            blrdata, gaussian.loglik.aic.irlssgd, gaussian.loglik.alpha, transforms, 60, 250, 2000, blr_probs, blr_pars, F)
+            blrdata, gaussian.loglik.aic.irlssgd, gaussian.loglik.alpha, transforms, 60, 250, 2000, blr_probs, blr_pars, T)

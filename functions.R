@@ -62,8 +62,28 @@ rmse_conv <- function (full, sim, steps, renorm=T, lo=F) {
   return(rmse_converge)
 }
 
+renorm_mcmc <- function (sim, lo=T, count, option=F) {
+  model.count <- length(sim$models)
+  lo.count <- length(sim$lo.models)
+  if (option) count <- count*(model.count/(model.count+lo.count))
+  lo.use <- (count/model.count)*lo.count
+  cat("Count:",count,"\n")
+  cat("LO:",lo.use,"\n")
+  mcmc <- GMJMCMC:::marginal.probs(sim$models[1:count])
+  if (lo) {
+    models <- c(sim$models[1:count], sim$lo.models[1:lo.use])
+  } else models <- sim$models[1:count]
+  renorm_res <- marginal.probs.renorm(models)
+  renorm <- renorm_res$probs
+  model.size <- length(models[[1]]$model)
+  modmat <- matrix(unlist(models), ncol=model.size+3, byrow=T)
+  modmat <- modmat[(!duplicated(modmat[,2:(model.size+1)], dim=1, fromLast=T)),]
+  total <- sum(exp(modmat[,model.size+2]))
+  return(list(rm=renorm, mc=mcmc, total=total, unique=renorm_res$unique, count=count, lo.use=lo.use))
+}
+
 # Function for running simulations on many models with varying subsample size
-run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
+run_sim <- function (x, y, loglik_fun, nobs, models, subs, ...) {
   worker_id <- (models[1]-1) / length(models)
   models <- models[!is.na(models)]
   cat(paste0("\n","Worker: ",worker_id," simulating ", length(models)," models.\n"))
@@ -72,7 +92,7 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
   index <- 1
   for (i in models) {
     modelvector <- as.logical(c(T,intToBits(i)[1:15]))
-    loglik <- loglik_fun(y[1:nobs], x[1:nobs,], modelvector, NULL, list(subs = subs, g= 47))#100/sqrt(nobs/100)))
+    loglik <- loglik_fun(y[1:nobs], x[1:nobs,], modelvector, NULL, ...)#list(subs = subs, g= 47))#100/sqrt(nobs/100)))
     res[[index]] <- list(prob=NA, model=modelvector[-1], crit=loglik, alpha=NA)
     if (index %% max(floor(length(models)/100),1) == 0) {
       progress <- print.progressbar(progress, 100)
@@ -86,10 +106,10 @@ run_sim <- function (x, y, loglik_fun, nobs, models, subs) {
 }
 
 # Function for running a multicore simulation and save the results properly
-run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, directory) {
+run_multisim <- function (x, y, loglik, model_parts, n_obs, subs, name, directory, ...) {
   cat(paste0("\n", "Running ", name, " simulation.\n"))
   simres <- mclapply(1:nrow(model_parts), function (mods) {
-    run_sim(x, y, loglik, n_obs, model_parts[mods,], subs)
+    run_sim(x, y, loglik, n_obs, model_parts[mods,], subs, ...)
   }, mc.cores = nrow(model_parts), mc.preschedule = F)
   simres <- unlist(simres, recursive = F)
   assign(name, simres)

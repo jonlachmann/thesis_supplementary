@@ -30,7 +30,7 @@ for (i in 1:length(subs_list)) {
 }
 lastresult <- rep(0, length(subs_list))
 logistic_mjmcmc_files <- list.files(path=paste0("data/mjmcmc/logistic/",run,"/"))
-for (file in logistic_mjmcmc_files[1:120]) {
+for (file in logistic_mjmcmc_files[121:156]) {
   # Load the file
   cat("Loading ",file,"...\n")
   rundata <- loadRdata(paste0("data/mjmcmc/logistic/",run,"/",file))
@@ -46,17 +46,20 @@ for (file in logistic_mjmcmc_files[1:120]) {
   cat("Calculating renormalized estimates...\n")
   renorm_res[[sub_id]][,lastresult[sub_id]] <- rmse_conv(full_100Kl_renorm, rundata, 66, T,T)
 }
-#save(mcmc_res, file="data/mjmcmc/logistic/10K/mcmc_res.Rdata")
-#save(renorm_res, file="data/mjmcmc/logistic/10K/renorm_res.Rdata")
+save(mcmc_res, file="data/mjmcmc/logistic/100K/mcmc_res.Rdata")
+save(renorm_res, file="data/mjmcmc/logistic/100K/renorm_res.Rdata")
 load(file="data/mjmcmc/logistic/10K/mcmc_res.Rdata")
 load(file="data/mjmcmc/logistic/10K/renorm_res.Rdata")
-load(file="data/full_enumeration/logistic/10K/renorm.Rdata")
+load(file="data/full_enumeration/logistic/100K/renorm.Rdata")
 
 # Add one matrix to lists
 renorm_res <- c(1, renorm_res)
 mcmc_res <- c(1, mcmc_res)
 mcmc_res[[1]] <- matrix(NA, 66, 20)
 renorm_res[[1]] <- matrix(NA, 66, 20)
+
+mcmc_res[[2]]<- mcmc_res[[2]][,1:16]
+renorm_res[[2]]<- renorm_res[[2]][,1:16]
 
 # Calculate the mean renorm for the full enumeration runs
 full_rmse <- lapply(renorm_all, function (x) {
@@ -78,14 +81,14 @@ renorm_qm33 <- vector("list")
 renorm_qm33[[1]] <- lapply(renorm_qm[[1]], function(x) x[seq(1,66,2)])
 for (i in 2:8) renorm_qm33[[i]] <- lapply(renorm_qm[[i]], function(x) x[seq(1:33)])
 
-save(mcmc_qm33, file="data/mjmcmc/logistic/10K/mcmc_qm33.Rdata")
-save(renorm_qm33, file="data/mjmcmc/logistic/10K/renorm_qm33.Rdata")
+save(mcmc_qm33, file="data/mjmcmc/logistic/100K/mcmc_qm33.Rdata")
+save(renorm_qm33, file="data/mjmcmc/logistic/100K/renorm_qm33.Rdata")
 
 mjmcmc_plot(mcmc_qm33,
             renorm_qm33,
             full_rmse_qm,
             ymax=0.43,
-            main="RMSE of marginal posterior using MJMCMC with S-IRLS-SGD,\nlogistic data with 10,000 observations")
+            main="RMSE of marginal posterior using MJMCMC with S-IRLS-SGD,\nlogistic data with 100,000 observations")
 # Saved as 1000x800 @ 110DPI
 
 multiplot(t(rbind(full_10Kl_renorm, full_10Kl_renorm2)))

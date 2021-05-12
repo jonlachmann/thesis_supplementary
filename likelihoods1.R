@@ -46,3 +46,12 @@ linear.g.prior.loglik.irlssgd <- function (y, x, model, complex, params) {
   logmarglik <- 0.5*(log(1+params$g)*(n-p) - log(1+params$g*(1-rsquared))*(n-1))*(p!=1)
   return(logmarglik)
 }
+
+logistic.g.prior.loglik <- function (y, x, model, complex, params) {
+  out <- glm.fit(as.matrix(x[,model]),y, family=binomial())
+  rsquared <- 1-sum(var(out$residuals))/sum(var(y))
+  p <- out$rank
+  n <- nrow(x)
+  logmarglik <- 0.5*(log(1+params$g)*(n-p) - log(1+params$g*(1-rsquared))*(n-1))*(p!=1)
+  return(logmarglik)
+}
