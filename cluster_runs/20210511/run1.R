@@ -11,7 +11,6 @@ source("packages.R")
 source("likelihoods1.R")
 source("blr/sim_blr.R")
 source("functions.R")
-library(GMJMCMC)
 
 dirname <- create_randdir()
 
@@ -27,13 +26,13 @@ blrdata <- cbind(blr_y, blr_x)
 blr_pars <- gen.params.list(blrdata, T)
 blr_probs <- gen.probs.list(transforms)
 
-blr_probs$filter <- 0.8
+blr_probs$filter <- 0.9
 blr_pars$loglik$r <- 1/nrow(blrdata)
 blr_pars$loglik$subs <- subs
-blr_pars$feat$pop.max <- 32
-blr_pars$feat$prel.filter <- 0.2
+blr_pars$feat$pop.max <- 40
+blr_pars$feat$prel.filter <- 0.9
 blr_pars$feat$keep.org <- T
-blr_pars$feat$keep.min <- 0.9
+blr_pars$feat$keep.min <- 0.8
 blr_pars$feat$D <- 5
 blr_probs$gen <- c(10, 5, 1, 1)
 blr_pars$rescale.large <- T
@@ -42,4 +41,4 @@ num_cores <- detectCores()
 
 print(paste0("Running ",basename,"run!"))
 run_gmjmcmc(run_count, basename, subs,
-            blrdata, gaussian.loglik.aic.irlssgd, gaussian.loglik.alpha, transforms, 60, 250, 2000, blr_probs, blr_pars, T)
+            blrdata, gaussian.loglik.aic.irlssgd, gaussian.loglik.alpha, transforms, 60, 500, 2000, blr_probs, blr_pars, T)

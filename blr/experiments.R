@@ -33,12 +33,16 @@ multiplot(unlist(blrres2$best.margs))
 mergeres <- merge.results(list(blrres), "all")
 
 plot(mergeres, 10)
-
-blr_dir <- "data/blr/results/"
+blr_dir <- "299/"
+blr_dir <- "data/blr/results3/"
 blr_runs <- vector("list")
 blr_files <- list.files(path=paste0(blr_dir))
-for (i in 1:40) blr_runs[[i]] <- loadRdata(file=paste0(blr_dir,blr_files[i]))
+for (i in 1:10) blr_runs[[i]] <- loadRdata(file=paste0(blr_dir,blr_files[i]))
 
 mergeres_blr <- merge.results(blr_runs, "best", 2, 0.0001)
 par(mfrow=c(1,1))
-plot(mergeres_blr, 30)
+plot(mergeres_blr, 35)
+
+load("191/run191_gmjmcmc_blr10_1.Rdata")
+
+plot(run191_gmjmcmc_blr10_1, 20)
